@@ -1,0 +1,8 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ensaios-igreja && npm install && npm run build",
+  "outputDirectory": "ensaios-igreja/.next",
+  "installCommand": "cd ensaios-igreja && npm install",
+  "devCommand": "cd ensaios-igreja && npm run dev",
+  "rootDirectory": "ensaios-igreja"
+}

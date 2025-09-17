@@ -1,0 +1,29 @@
+# Build artifacts
+.next/
+build/
+dist/
+
+# Dependencies  
+node_modules/
+
+# Environment variables
+.env
+.env*.local
+
+# Logs
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Vercel
+.vercel/
+
+# TypeScript
+*.tsbuildinfo

@@ -1,7 +1,7 @@
 'use client';
 
 import { useAudioPlayer } from '@/contexts/audio-player-context';
-import { SpotifyPlayer } from '@/components/audio/spotify-player';
+import { AudioPlayer } from '@/components/audio/audio-player';
 
 export function GlobalAudioPlayer() {
   const { 
@@ -18,7 +18,7 @@ export function GlobalAudioPlayer() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 lg:pl-64">
-      <SpotifyPlayer
+      <AudioPlayer
         tracks={tracks}
         currentTrackIndex={currentTrackIndex}
         onTrackChange={setCurrentTrackIndex}

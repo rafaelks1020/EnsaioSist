@@ -7,6 +7,7 @@ interface Track {
   title: string;
   artist: string;
   url: string;
+  lyrics?: string;
 }
 
 interface AudioPlayerContextType {
@@ -16,6 +17,8 @@ interface AudioPlayerContextType {
   currentTrack: Track | null;
   currentTrackIndex: number;
   tracks: Track[];
+  currentTime: number;
+  showLyrics: boolean;
   
   // Player controls
   showPlayer: (tracks: Track[], startIndex?: number) => void;
@@ -24,6 +27,8 @@ interface AudioPlayerContextType {
   playTracks: (tracks: Track[], startIndex?: number) => void;
   setCurrentTrackIndex: (index: number) => void;
   togglePlayPause: () => void;
+  setCurrentTime: (time: number) => void;
+  toggleLyrics: () => void;
 }
 
 const AudioPlayerContext = createContext<AudioPlayerContextType | undefined>(undefined);
@@ -34,6 +39,8 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [currentTrackIndex, setCurrentTrackIndexState] = useState(0);
   const [tracks, setTracks] = useState<Track[]>([]);
+  const [currentTime, setCurrentTimeState] = useState(0);
+  const [showLyrics, setShowLyrics] = useState(false);
 
   const showPlayer = (newTracks: Track[], startIndex: number = 0) => {
     setTracks(newTracks);
@@ -76,18 +83,30 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
     setIsPlaying(!isPlaying);
   };
 
+  const setCurrentTime = (time: number) => {
+    setCurrentTimeState(time);
+  };
+
+  const toggleLyrics = () => {
+    setShowLyrics(!showLyrics);
+  };
+
   const value: AudioPlayerContextType = {
     isVisible,
     isPlaying,
     currentTrack,
     currentTrackIndex,
     tracks,
+    currentTime,
+    showLyrics,
     showPlayer,
     hidePlayer,
     playTrack,
     playTracks,
     setCurrentTrackIndex,
     togglePlayPause,
+    setCurrentTime,
+    toggleLyrics,
   };
 
   return (

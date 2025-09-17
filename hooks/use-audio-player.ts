@@ -3,6 +3,7 @@ import { useAudioPlayer } from '@/contexts/audio-player-context';
 interface Hymn {
   id: string;
   title: string;
+  lyrics?: string;
   mp3Url?: string;
   createdBy: {
     name: string;
@@ -14,6 +15,7 @@ interface Track {
   title: string;
   artist: string;
   url: string;
+  lyrics?: string;
 }
 
 export function useHymnPlayer() {
@@ -29,7 +31,8 @@ export function useHymnPlayer() {
       id: hymn.id,
       title: hymn.title,
       artist: hymn.createdBy.name,
-      url: hymn.mp3Url
+      url: hymn.mp3Url,
+      lyrics: hymn.lyrics
     };
 
     audioPlayer.playTrack(track);
@@ -47,7 +50,8 @@ export function useHymnPlayer() {
       id: h.id,
       title: h.title,
       artist: h.createdBy.name,
-      url: h.mp3Url!
+      url: h.mp3Url!,
+      lyrics: h.lyrics
     }));
 
     const adjustedIndex = Math.min(startIndex, tracks.length - 1);
@@ -82,7 +86,8 @@ export function usePlaylistPlayer() {
       id: item.hymn.id,
       title: item.hymn.title,
       artist: item.hymn.createdBy.name,
-      url: item.hymn.mp3Url!
+      url: item.hymn.mp3Url!,
+      lyrics: item.hymn.lyrics
     }));
 
     const adjustedIndex = Math.min(startIndex, tracks.length - 1);

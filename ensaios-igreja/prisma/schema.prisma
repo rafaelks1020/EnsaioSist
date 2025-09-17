@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USUARIO
+  ADOLESCENTE
+}
+
+enum Weekday {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(ADOLESCENTE)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  hymns        Hymn[]   @relation("UserHymns")
+  playlists    Playlist[] @relation("UserPlaylists")
+
+  @@map("users")
+}
+
+model Hymn {
+  id           String   @id @default(cuid())
+  title        String
+  lyrics       String   // HTML string from TipTap editor
+  mp3Url       String?
+  createdById  String
+  createdBy    User     @relation("UserHymns", fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  rehearsals   RehearsalHymn[]
+  playlistItems PlaylistItem[]
+
+  @@map("hymns")
+}
+
+model RehearsalSlot {
+  id          String   @id @default(cuid())
+  weekday     Weekday
+  startTime   String   // "19:30" (HH:mm format)
+  endTime     String   // "21:00" (HH:mm format)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  hymns       RehearsalHymn[]
+
+  @@map("rehearsal_slots")
+}
+
+model RehearsalHymn {
+  id           String        @id @default(cuid())
+  rehearsalId  String
+  hymnId       String
+  order        Int           @default(0) // Ordem dos hinos no ensaio
+  rehearsal    RehearsalSlot @relation(fields: [rehearsalId], references: [id], onDelete: Cascade)
+  hymn         Hymn          @relation(fields: [hymnId], references: [id], onDelete: Cascade)
+  createdAt    DateTime      @default(now())
+
+  @@unique([rehearsalId, hymnId])
+  @@map("rehearsal_hymns")
+}
+
+model Playlist {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  isPublic    Boolean        @default(false) // Playlists públicas podem ser criadas apenas por admins
+  createdById String
+  createdBy   User           @relation("UserPlaylists", fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  items       PlaylistItem[]
+
+  @@map("playlists")
+}
+
+model PlaylistItem {
+  id         String   @id @default(cuid())
+  playlistId String
+  hymnId     String
+  order      Int      @default(0) // Ordem dos hinos na playlist
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  hymn       Hymn     @relation(fields: [hymnId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([playlistId, hymnId])
+  @@map("playlist_items")
+}

@@ -191,12 +191,12 @@ export default function PlaylistsPage() {
                   Playlist pública (apenas administradores)
                 </label>
               </div>
-              <div className="flex gap-2">
-                <Button type="submit">Criar</Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button type="submit" className="w-full sm:w-auto">Criar</Button>
                 <Button
                   type="button"
                   onClick={() => setShowCreateForm(false)}
-                  className="bg-gray-600 hover:bg-gray-700"
+                  className="w-full sm:w-auto bg-gray-600 hover:bg-gray-700"
                 >
                   Cancelar
                 </Button>
@@ -222,21 +222,21 @@ export default function PlaylistsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {playlists.map((playlist) => (
             <Card key={playlist.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="flex items-center gap-2 text-lg">
+                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                       {playlist.isPublic ? (
-                        <Users className="h-4 w-4 text-blue-600" />
+                        <Users className="h-4 w-4 text-blue-600 flex-shrink-0" />
                       ) : (
-                        <Lock className="h-4 w-4 text-gray-600" />
+                        <Lock className="h-4 w-4 text-gray-600 flex-shrink-0" />
                       )}
                       <span className="truncate">{playlist.name}</span>
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-sm">
                       {playlist.description || 'Sem descrição'}
                     </CardDescription>
                     <p className="text-xs text-gray-500 mt-1">
@@ -245,14 +245,14 @@ export default function PlaylistsPage() {
                   </div>
                   <Button
                     onClick={() => deletePlaylist(playlist.id)}
-                    className="p-1 text-red-600 hover:bg-red-50 bg-transparent border-0"
+                    className="p-2 text-red-600 hover:bg-red-50 bg-transparent border-0 flex-shrink-0 touch-manipulation"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
+              <CardContent className="pt-0">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Music className="h-4 w-4" />
                     <span>{playlist._count.items} hinos</span>
@@ -260,13 +260,13 @@ export default function PlaylistsPage() {
                   <div className="flex gap-2">
                     <a
                       href={`/app/playlists/${playlist.id}`}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded border"
+                      className="flex-1 sm:flex-none p-2 text-blue-600 hover:bg-blue-50 rounded border text-center touch-manipulation"
                     >
-                      <Edit className="h-4 w-4" />
+                      <Edit className="h-4 w-4 mx-auto" />
                     </a>
                     <Button
                       onClick={() => playPlaylist(playlist)}
-                      className="p-2 bg-green-600 hover:bg-green-700 text-white"
+                      className="flex-1 sm:flex-none p-2 bg-green-600 hover:bg-green-700 text-white touch-manipulation"
                       disabled={playlist._count.items === 0}
                     >
                       <Play className="h-4 w-4" />

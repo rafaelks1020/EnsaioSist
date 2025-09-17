@@ -192,7 +192,7 @@ export function AudioPlayer({
       {/* Progress Bar */}
       <div 
         ref={progressRef}
-        className="w-full h-1 bg-gray-200 cursor-pointer hover:h-2 transition-all"
+        className="w-full h-1 bg-gray-200 cursor-pointer hover:h-2 transition-all touch-manipulation"
         onClick={handleProgressClick}
       >
         <div 
@@ -201,23 +201,33 @@ export function AudioPlayer({
         />
       </div>
 
-      <div className="flex items-center justify-between p-4 max-w-6xl mx-auto">
+      {/* Mobile Layout (small screens) */}
+      <div className="block sm:hidden">
         {/* Track Info */}
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded flex items-center justify-center text-white font-bold">
+        <div className="flex items-center gap-3 p-4 border-b border-gray-100">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded flex items-center justify-center text-white font-bold text-sm">
             {currentTrack.title.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="font-medium text-gray-900 truncate">{currentTrack.title}</h3>
-            <p className="text-sm text-gray-500 truncate">{currentTrack.artist}</p>
+            <h3 className="font-medium text-gray-900 truncate text-sm">{currentTrack.title}</h3>
+            <p className="text-xs text-gray-500 truncate">{currentTrack.artist}</p>
           </div>
+          {onPlaylistToggle && (
+            <Button
+              onClick={onPlaylistToggle}
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-600 touch-manipulation"
+              title="Ver playlist"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-2 mx-8">
+        <div className="flex items-center justify-center gap-4 px-4 py-3">
           <Button
             onClick={toggleRepeat}
-            className={`p-2 rounded-full hover:bg-gray-100 ${
+            className={`p-2 rounded-full hover:bg-gray-100 touch-manipulation ${
               repeatMode !== 'none' ? 'text-blue-600' : 'text-gray-600'
             }`}
             title={`Repeat: ${repeatMode}`}
@@ -227,7 +237,7 @@ export function AudioPlayer({
 
           <Button
             onClick={handlePrevious}
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-600 touch-manipulation"
             disabled={tracks.length <= 1}
           >
             <SkipBack className="h-5 w-5" />
@@ -235,7 +245,7 @@ export function AudioPlayer({
 
           <Button
             onClick={togglePlay}
-            className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white"
+            className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white touch-manipulation"
           >
             {isPlaying ? (
               <Pause className="h-6 w-6" />
@@ -246,50 +256,134 @@ export function AudioPlayer({
 
           <Button
             onClick={handleNext}
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-600 touch-manipulation"
             disabled={tracks.length <= 1}
           >
             <SkipForward className="h-5 w-5" />
           </Button>
 
-          {onPlaylistToggle && (
-            <Button
-              onClick={onPlaylistToggle}
-              className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
-              title="Ver playlist"
-            >
-              <List className="h-5 w-5" />
-            </Button>
-          )}
+          <Button
+            onClick={toggleMute}
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-600 touch-manipulation"
+          >
+            {isMuted || volume === 0 ? (
+              <VolumeX className="h-4 w-4" />
+            ) : (
+              <Volume2 className="h-4 w-4" />
+            )}
+          </Button>
         </div>
 
-        {/* Volume & Time */}
-        <div className="flex items-center gap-3 min-w-0 flex-1 justify-end">
-          <span className="text-sm text-gray-500 whitespace-nowrap">
+        {/* Time and Volume */}
+        <div className="flex items-center justify-between px-4 pb-3">
+          <span className="text-xs text-gray-500">
             {formatTime(currentTime)} / {formatTime(duration)}
           </span>
           
-          <div className="flex items-center gap-2">
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={isMuted ? 0 : volume}
+            onChange={handleVolumeChange}
+            className="w-16 accent-blue-600"
+          />
+        </div>
+      </div>
+
+      {/* Desktop/Tablet Layout (medium screens and up) */}
+      <div className="hidden sm:block">
+        <div className="flex items-center justify-between p-4 max-w-6xl mx-auto">
+          {/* Track Info */}
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded flex items-center justify-center text-white font-bold">
+              {currentTrack.title.charAt(0).toUpperCase()}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-medium text-gray-900 truncate">{currentTrack.title}</h3>
+              <p className="text-sm text-gray-500 truncate">{currentTrack.artist}</p>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center gap-2 mx-4 lg:mx-8">
             <Button
-              onClick={toggleMute}
-              className="p-2 rounded-full hover:bg-gray-100 text-gray-600"
+              onClick={toggleRepeat}
+              className={`p-2 rounded-full hover:bg-gray-100 touch-manipulation ${
+                repeatMode !== 'none' ? 'text-blue-600' : 'text-gray-600'
+              }`}
+              title={`Repeat: ${repeatMode}`}
             >
-              {isMuted || volume === 0 ? (
-                <VolumeX className="h-4 w-4" />
+              {getRepeatIcon()}
+            </Button>
+
+            <Button
+              onClick={handlePrevious}
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-600 touch-manipulation"
+              disabled={tracks.length <= 1}
+            >
+              <SkipBack className="h-5 w-5" />
+            </Button>
+
+            <Button
+              onClick={togglePlay}
+              className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white touch-manipulation"
+            >
+              {isPlaying ? (
+                <Pause className="h-6 w-6" />
               ) : (
-                <Volume2 className="h-4 w-4" />
+                <Play className="h-6 w-6 ml-0.5" />
               )}
             </Button>
+
+            <Button
+              onClick={handleNext}
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-600 touch-manipulation"
+              disabled={tracks.length <= 1}
+            >
+              <SkipForward className="h-5 w-5" />
+            </Button>
+
+            {onPlaylistToggle && (
+              <Button
+                onClick={onPlaylistToggle}
+                className="p-2 rounded-full hover:bg-gray-100 text-gray-600 touch-manipulation"
+                title="Ver playlist"
+              >
+                <List className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
+
+          {/* Volume & Time */}
+          <div className="flex items-center gap-3 min-w-0 flex-1 justify-end">
+            <span className="text-sm text-gray-500 whitespace-nowrap hidden md:block">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </span>
             
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              value={isMuted ? 0 : volume}
-              onChange={handleVolumeChange}
-              className="w-20 accent-blue-600"
-            />
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={toggleMute}
+                className="p-2 rounded-full hover:bg-gray-100 text-gray-600 touch-manipulation"
+              >
+                {isMuted || volume === 0 ? (
+                  <VolumeX className="h-4 w-4" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
+              </Button>
+              
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={isMuted ? 0 : volume}
+                onChange={handleVolumeChange}
+                className="w-16 lg:w-20 accent-blue-600"
+              />
+            </div>
           </div>
         </div>
       </div>

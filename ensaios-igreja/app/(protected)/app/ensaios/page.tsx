@@ -180,11 +180,11 @@ export default function EnsaiosPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Ensaios</h1>
-          <p className="text-gray-600">Gerencie os horários de ensaio semanais</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Ensaios</h1>
+          <p className="text-gray-600 text-sm sm:text-base">Gerencie os horários de ensaio semanais</p>
         </div>
         <Button
           onClick={() => {
@@ -192,6 +192,7 @@ export default function EnsaiosPage() {
             setEditingSlot(null);
             setFormData({ weekday: Weekday.SUNDAY, startTime: '', endTime: '', description: '' });
           }}
+          className="w-full sm:w-auto"
         >
           <Plus className="h-4 w-4 mr-2" />
           Novo Ensaio
@@ -227,7 +228,7 @@ export default function EnsaiosPage() {
                 </select>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="startTime">Horário de Início *</Label>
                   <Input
@@ -261,13 +262,13 @@ export default function EnsaiosPage() {
                 />
               </div>
               
-              <div className="flex gap-2">
-                <Button type="submit">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button type="submit" className="w-full sm:w-auto">
                   {editingSlot ? 'Atualizar' : 'Criar'}
                 </Button>
                 <Button
                   type="button"
-                  className="border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                  className="w-full sm:w-auto border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                   onClick={() => {
                     setShowCreateForm(false);
                     setEditingSlot(null);
@@ -304,31 +305,33 @@ export default function EnsaiosPage() {
                       .map((slot) => (
                         <div
                           key={slot.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-gray-50 rounded-lg"
                         >
-                          <div className="flex items-center gap-3">
-                            <Clock className="h-4 w-4 text-gray-500" />
-                            <div>
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <Clock className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                            <div className="min-w-0 flex-1">
                               <div className="font-medium">
                                 {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
                               </div>
                               {slot.description && (
-                                <div className="text-sm text-gray-600">
+                                <div className="text-sm text-gray-600 truncate">
                                   {slot.description}
                                 </div>
                               )}
                             </div>
                           </div>
-                          <div className="flex gap-2">
+                          
+                          {/* Mobile Actions */}
+                          <div className="flex sm:hidden gap-2 w-full">
                             <a
                               href={`/app/ensaios/${slot.id}`}
-                              className="inline-flex items-center px-3 py-1 text-sm border border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded"
+                              className="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm border border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded touch-manipulation"
                             >
                               <Music className="h-4 w-4 mr-1" />
                               Hinos
                             </a>
                             <Button
-                              className="border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-3 py-1 text-sm"
+                              className="flex-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-3 py-2 text-sm touch-manipulation"
                               onClick={() => startEdit(slot)}
                             >
                               <Edit className="h-4 w-4" />
@@ -336,7 +339,49 @@ export default function EnsaiosPage() {
                             
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button className="bg-red-600 text-white hover:bg-red-700 px-3 py-1 text-sm">
+                                <Button className="flex-1 bg-red-600 text-white hover:bg-red-700 px-3 py-2 text-sm touch-manipulation">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Tem certeza que deseja excluir este horário de ensaio?
+                                    Esta ação não pode ser desfeita.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDelete(slot.id)}
+                                  >
+                                    Excluir
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+
+                          {/* Desktop Actions */}
+                          <div className="hidden sm:flex gap-2 flex-shrink-0">
+                            <a
+                              href={`/app/ensaios/${slot.id}`}
+                              className="inline-flex items-center px-3 py-1 text-sm border border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded touch-manipulation"
+                            >
+                              <Music className="h-4 w-4 mr-1" />
+                              Hinos
+                            </a>
+                            <Button
+                              className="border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-3 py-1 text-sm touch-manipulation"
+                              onClick={() => startEdit(slot)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button className="bg-red-600 text-white hover:bg-red-700 px-3 py-1 text-sm touch-manipulation">
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               </AlertDialogTrigger>

@@ -17,7 +17,7 @@ export function GlobalAudioPlayer() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50">
+    <div className="fixed bottom-0 left-0 right-0 z-50 lg:pl-64">
       <AudioPlayer
         tracks={tracks}
         currentTrackIndex={currentTrackIndex}

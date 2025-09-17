@@ -106,21 +106,21 @@ export default function NovoHinoPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <Link href="/app/hinos">
-          <Button variant="outline" size="sm">
+          <Button className="w-full sm:w-auto border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Novo Hino</h1>
-          <p className="text-gray-600">Adicione um novo hino à biblioteca</p>
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Novo Hino</h1>
+          <p className="text-gray-600 text-sm sm:text-base">Adicione um novo hino à biblioteca</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Informações Básicas</CardTitle>
@@ -174,6 +174,7 @@ export default function NovoHinoPage() {
                 type="button"
                 onClick={handleUpload}
                 disabled={isUploading}
+                className="w-full sm:w-auto"
               >
                 <Upload className="h-4 w-4 mr-2" />
                 {isUploading ? 'Enviando...' : 'Fazer Upload'}
@@ -192,13 +193,13 @@ export default function NovoHinoPage() {
           </CardContent>
         </Card>
 
-        <div className="flex gap-2">
-          <Button type="submit" disabled={isSaving}>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button type="submit" disabled={isSaving} className="w-full sm:w-auto">
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? 'Salvando...' : 'Salvar Hino'}
           </Button>
-          <Link href="/app/hinos">
-            <Button type="button" variant="outline">
+          <Link href="/app/hinos" className="w-full sm:w-auto">
+            <Button type="button" className="w-full border border-input bg-background hover:bg-accent hover:text-accent-foreground">
               Cancelar
             </Button>
           </Link>

@@ -14,12 +14,15 @@ import {
   Mic2,
   Maximize2,
   Heart,
-  Shuffle
+  Shuffle,
+  Clock,
+  Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAudioPlayer } from '@/contexts/audio-player-context';
 import { SyncedLyricsDisplay } from './synced-lyrics-display';
 import { MobileLyricsViewer } from './mobile-lyrics-viewer';
+import { LyricsSyncEditor } from './lyrics-sync-editor';
 
 interface Track {
   id: string;
@@ -59,6 +62,7 @@ export function SpotifyPlayer({
   const [isLyricsFullscreen, setIsLyricsFullscreen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showSyncEditor, setShowSyncEditor] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -291,6 +295,16 @@ export function SpotifyPlayer({
                   title="Ver letra"
                 >
                   <Mic2 className="h-4 w-4" />
+                </Button>
+              )}
+
+              {currentTrack.lyrics && (
+                <Button
+                  onClick={() => setShowSyncEditor(true)}
+                  className="p-2 h-8 w-8 text-gray-400 hover:text-white"
+                  title="Sincronizar letra"
+                >
+                  <Clock className="h-4 w-4" />
                 </Button>
               )}
               
@@ -584,6 +598,37 @@ export function SpotifyPlayer({
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
       `}</style>
+
+      {/* Editor de Sincronização */}
+      {showSyncEditor && currentTrack && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-7xl max-h-[90vh] overflow-hidden">
+            <LyricsSyncEditor
+              hymn={{
+                id: currentTrack.id,
+                title: currentTrack.title,
+                lyrics: currentTrack.lyrics || '',
+                mp3Url: currentTrack.url
+              }}
+              onSave={async (timestamps) => {
+                // Aqui você pode salvar os timestamps no banco de dados
+                console.log('Timestamps salvos:', timestamps);
+                
+                // Simular salvamento
+                try {
+                  // await saveTimestamps(currentTrack.id, timestamps);
+                  alert('Sincronização salva com sucesso!');
+                  setShowSyncEditor(false);
+                } catch (error) {
+                  console.error('Erro ao salvar sincronização:', error);
+                  alert('Erro ao salvar sincronização');
+                }
+              }}
+              onCancel={() => setShowSyncEditor(false)}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

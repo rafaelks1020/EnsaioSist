@@ -45,7 +45,7 @@ export default function AcessoPlaylistsPage() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(true);
   
-  const { playPlaylist: playPlaylistTracks, isVisible } = usePlaylistPlayer();
+  const { playPlaylist: playPlaylistTracks, currentTrack } = usePlaylistPlayer();
 
   useEffect(() => {
     fetchPlaylists();
@@ -92,7 +92,7 @@ export default function AcessoPlaylistsPage() {
   }
 
   return (
-    <div className={`space-y-6 ${isVisible ? 'pb-32' : ''}`}>
+    <div className={`space-y-6 ${currentTrack ? 'pb-32' : ''}`}>
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Playlists</h1>
         <p className="text-gray-600">Escute as playlists criadas pelos líderes</p>

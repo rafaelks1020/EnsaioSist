@@ -55,7 +55,7 @@ export default function RehearsalDetails() {
   const [lyricsPanelSize, setLyricsPanelSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [isFullscreen, setIsFullscreen] = useState(false);
   
-  const { playHymns, playHymn, isVisible } = useHymnPlayer();
+  const { playHymns, playHymn, currentTrack, isPlaying } = useHymnPlayer();
 
   useEffect(() => {
     fetchRehearsalData();
@@ -130,12 +130,12 @@ export default function RehearsalDetails() {
 
   // Detectar quando o player parar para esconder a letra
   useEffect(() => {
-    if (!isVisible && showLyricsPanel) {
+    if (!currentTrack && showLyricsPanel) {
       setShowLyricsPanel(false);
       setCurrentPlayingHymn(null);
       setIsFullscreen(false);
     }
-  }, [isVisible, showLyricsPanel]);
+  }, [currentTrack, showLyricsPanel]);
 
   // Configurações de tamanho do painel
   const panelSizes = {
@@ -158,7 +158,7 @@ export default function RehearsalDetails() {
   }
 
   return (
-    <div className={`container mx-auto px-4 py-8 max-w-4xl ${isVisible ? 'pb-32' : ''}`}>
+    <div className={`container mx-auto px-4 py-8 max-w-4xl ${currentTrack ? 'pb-32' : ''}`}>
       <div className="mb-6">
         <Button 
           onClick={() => router.back()}

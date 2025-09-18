@@ -41,7 +41,7 @@ export default function HinosPage() {
   const [showLyricsPanel, setShowLyricsPanel] = useState(false);
   const [currentPlayingHymn, setCurrentPlayingHymn] = useState<Hymn | null>(null);
   
-  const { playHymn, isVisible } = useHymnPlayer();
+  const { playHymn, currentTrack, isPlaying } = useHymnPlayer();
 
   const fetchHymns = async (page = 1, searchTerm = '') => {
     try {
@@ -94,40 +94,49 @@ export default function HinosPage() {
   };
 
   return (
-    <div className={`space-y-4 sm:space-y-6 ${isVisible ? 'pb-32' : ''}`}>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Hinos</h1>
-          <p className="text-gray-600 text-sm sm:text-base">Gerencie a biblioteca de hinos</p>
-        </div>
-        <Link href="/app/hinos/novo">
-          <Button className="w-full sm:w-auto">
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Hino
-          </Button>
-        </Link>
+    <div className="min-h-screen relative">
+      {/* Background com imagem musical */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1920&h=1080&fit=crop&crop=center')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/95 via-blue-900/95 to-indigo-900/95"></div>
+        <div className="absolute inset-0 backdrop-blur-sm"></div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Buscar Hinos</CardTitle>
-          <CardDescription>
-            Encontre hinos pelo título
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">
-            <Input
-              placeholder="Digite o título do hino..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1"
-            />
-            <Button type="submit" className="w-full sm:w-auto">
-              <Search className="h-4 w-4 mr-2" />
-              Buscar
+      
+      {/* Conteúdo principal */}
+      <div className={`relative z-10 space-y-4 sm:space-y-6 ${currentTrack ? 'pb-32' : ''} p-6`}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-lg">Hinos</h1>
+            <p className="text-gray-200 text-sm sm:text-base">Gerencie a biblioteca de hinos</p>
+          </div>
+          <Link href="/app/hinos/novo">
+            <Button className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg">
+              <Plus className="h-4 w-4 mr-2" />
+              Novo Hino
             </Button>
-          </form>
+          </Link>
+        </div>
+
+        <Card className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-white">Buscar Hinos</CardTitle>
+            <CardDescription className="text-gray-200">
+              Encontre hinos pelo título
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">
+              <Input
+                placeholder="Digite o título do hino..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="flex-1 bg-white/20 border-white/30 text-white placeholder:text-gray-300 backdrop-blur-sm"
+              />
+              <Button type="submit" className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                <Search className="h-4 w-4 mr-2" />
+                Buscar
+              </Button>
+            </form>
         </CardContent>
       </Card>
 
@@ -149,20 +158,20 @@ export default function HinosPage() {
               </Card>
             ) : (
               hymns.map((hymn) => (
-                <Card key={hymn.id}>
+                <Card key={hymn.id} className="bg-white/10 backdrop-blur-md border-white/20 shadow-xl hover:bg-white/15 transition-all">
                   <CardContent className="pt-4 sm:pt-6">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-gray-900 truncate">
+                        <h3 className="text-lg font-semibold text-white truncate">
                           {hymn.title}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-200 mt-1">
                           Criado por {hymn.createdBy.name} em{' '}
                           {new Date(hymn.createdAt).toLocaleDateString('pt-BR')}
                         </p>
                         {hymn.mp3Url && (
                           <div className="mt-2">
-                            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                            <span className="bg-green-500/20 text-green-300 text-xs px-2 py-1 rounded backdrop-blur-sm border border-green-500/30">
                               MP3 Disponível
                             </span>
                           </div>
@@ -175,7 +184,7 @@ export default function HinosPage() {
                           <>
                             <button
                               onClick={() => playHymn(hymn)}
-                              className="flex-1 p-3 text-green-600 hover:bg-green-50 rounded border text-center touch-manipulation"
+                              className="flex-1 p-3 text-green-300 hover:bg-green-500/20 rounded border border-green-500/30 text-center touch-manipulation backdrop-blur-sm transition-all"
                               title="Tocar no Player"
                             >
                               <Play className="h-4 w-4 mx-auto" />
@@ -188,7 +197,7 @@ export default function HinosPage() {
                                   setCurrentPlayingHymn(hymn);
                                   setShowLyricsPanel(true);
                                 }}
-                                className="flex-1 p-3 text-indigo-600 hover:bg-indigo-50 rounded border text-center touch-manipulation"
+                                className="flex-1 p-3 text-purple-300 hover:bg-purple-500/20 rounded border border-purple-500/30 text-center touch-manipulation backdrop-blur-sm transition-all"
                                 title="Ver letras sincronizadas"
                               >
                                 <Mic2 className="h-4 w-4 mx-auto" />
@@ -198,7 +207,7 @@ export default function HinosPage() {
                             <a
                               href={hymn.mp3Url}
                               download
-                              className="flex-1 p-3 text-blue-600 hover:bg-blue-50 rounded border text-center touch-manipulation"
+                              className="flex-1 p-3 text-blue-300 hover:bg-blue-500/20 rounded border border-blue-500/30 text-center touch-manipulation backdrop-blur-sm transition-all"
                               title="Baixar MP3"
                             >
                               <Download className="h-4 w-4 mx-auto" />
@@ -306,6 +315,7 @@ export default function HinosPage() {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }

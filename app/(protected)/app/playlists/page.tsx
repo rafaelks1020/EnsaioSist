@@ -49,7 +49,7 @@ export default function PlaylistsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newPlaylist, setNewPlaylist] = useState({ name: '', description: '', isPublic: false });
   
-  const { playPlaylist: playPlaylistTracks, isVisible } = usePlaylistPlayer();
+  const { playPlaylist: playPlaylistTracks, currentTrack } = usePlaylistPlayer();
 
   useEffect(() => {
     fetchPlaylists();
@@ -142,16 +142,25 @@ export default function PlaylistsPage() {
   }
 
   return (
-    <div className={`container mx-auto px-4 py-8 ${isVisible ? 'pb-32' : ''}`}>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Playlists</h1>
-          <p className="text-gray-600">Gerencie suas playlists de hinos</p>
-        </div>
-        <Button 
-          onClick={() => setShowCreateForm(true)}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
+    <div className="min-h-screen relative">
+      {/* Background com tema de playlists */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1920&h=1080&fit=crop&crop=center')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/95 via-purple-900/95 to-pink-900/95"></div>
+        <div className="absolute inset-0 backdrop-blur-sm"></div>
+      </div>
+      
+      {/* Conteúdo principal */}
+      <div className={`relative z-10 container mx-auto px-4 py-8 ${currentTrack ? 'pb-32' : ''}`}>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-white drop-shadow-lg">Playlists</h1>
+            <p className="text-gray-200">Gerencie suas playlists de hinos</p>
+          </div>
+          <Button 
+            onClick={() => setShowCreateForm(true)}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg"
+          >
           <Plus className="h-4 w-4 mr-2" />
           Nova Playlist
         </Button>
@@ -278,6 +287,7 @@ export default function PlaylistsPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

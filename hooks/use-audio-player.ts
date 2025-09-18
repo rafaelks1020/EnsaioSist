@@ -1,4 +1,4 @@
-import { useAudioPlayer } from '@/contexts/audio-player-context';
+import { useAudioPlayer } from '@/contexts/audio-player-context-simple';
 
 interface Hymn {
   id: string;
@@ -35,7 +35,8 @@ export function useHymnPlayer() {
       lyrics: hymn.lyrics
     };
 
-    audioPlayer.playTrack(track);
+    audioPlayer.setCurrentTrack(track);
+    audioPlayer.play();
   };
 
   const playHymns = (hymns: Hymn[], startIndex: number = 0) => {
@@ -55,7 +56,9 @@ export function useHymnPlayer() {
     }));
 
     const adjustedIndex = Math.min(startIndex, tracks.length - 1);
-    audioPlayer.playTracks(tracks, adjustedIndex);
+    // Para múltiplas faixas, por enquanto vamos tocar só a primeira
+    audioPlayer.setCurrentTrack(tracks[adjustedIndex]);
+    audioPlayer.play();
   };
 
   return {
@@ -91,7 +94,9 @@ export function usePlaylistPlayer() {
     }));
 
     const adjustedIndex = Math.min(startIndex, tracks.length - 1);
-    audioPlayer.playTracks(tracks, adjustedIndex);
+    // Para múltiplas faixas, por enquanto vamos tocar só a primeira
+    audioPlayer.setCurrentTrack(tracks[adjustedIndex]);
+    audioPlayer.play();
   };
 
   const playPlaylistHymn = (playlistItems: PlaylistHymn[], hymnId: string) => {

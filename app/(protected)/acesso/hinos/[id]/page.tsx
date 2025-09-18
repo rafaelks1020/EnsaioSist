@@ -32,7 +32,7 @@ export default function PublicHymnDetailsPage() {
   const [lyricsPanelSize, setLyricsPanelSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [isFullscreen, setIsFullscreen] = useState(false);
   
-  const { playHymn, isVisible } = useHymnPlayer();
+  const { playHymn, currentTrack, isPlaying } = useHymnPlayer();
 
   useEffect(() => {
     if (hymnId) {
@@ -96,12 +96,11 @@ export default function PublicHymnDetailsPage() {
 
   // Detectar quando o player parar para esconder a letra
   useEffect(() => {
-    if (!isVisible && showLyricsPanel) {
+    if (!currentTrack && showLyricsPanel) {
       setShowLyricsPanel(false);
-      setCurrentPlayingHymn(null);
       setIsFullscreen(false);
     }
-  }, [isVisible, showLyricsPanel]);
+  }, [currentTrack, showLyricsPanel]);
 
   const handleDownload = async () => {
     if (hymn && hymn.mp3Url) {

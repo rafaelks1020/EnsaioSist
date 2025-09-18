@@ -2,8 +2,8 @@
 
 import { SessionProvider } from 'next-auth/react';
 import { Toaster } from 'sonner';
-import { AudioPlayerProvider } from '@/contexts/audio-player-context';
-import { GlobalAudioPlayer } from '@/components/audio/global-audio-player';
+import { AudioPlayerProvider } from '@/contexts/audio-player-context-simple';
+import { GlobalAudioPlayer } from '@/components/audio/global-audio-player-simple';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

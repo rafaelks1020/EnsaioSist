@@ -32,7 +32,7 @@ export default function AcessoHinosPage() {
   const [lyricsPanelSize, setLyricsPanelSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [isFullscreen, setIsFullscreen] = useState(false);
   
-  const { playHymn, isVisible } = useHymnPlayer();
+  const { playHymn, currentTrack, isPlaying } = useHymnPlayer();
 
   const fetchHymns = async () => {
     try {
@@ -94,12 +94,12 @@ export default function AcessoHinosPage() {
 
   // Detectar quando o player parar para esconder a letra
   useEffect(() => {
-    if (!isVisible && showLyricsPanel) {
+    if (!currentTrack && showLyricsPanel) {
       setShowLyricsPanel(false);
       setCurrentPlayingHymn(null);
       setIsFullscreen(false);
     }
-  }, [isVisible, showLyricsPanel]);
+  }, [currentTrack, showLyricsPanel]);
 
   // Function to strip HTML tags and format lyrics for display
   const formatLyrics = (htmlContent: string) => {
@@ -124,7 +124,7 @@ export default function AcessoHinosPage() {
   }
 
   return (
-    <div className={`space-y-6 ${isVisible ? 'pb-32' : ''}`}>
+    <div className={`space-y-6 ${currentTrack ? 'pb-32' : ''}`}>
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Hinos</h1>
         <p className="text-gray-600">Consulte a letra e áudio dos hinos</p>

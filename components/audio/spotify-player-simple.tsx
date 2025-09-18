@@ -16,7 +16,7 @@ import {
   X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAudioPlayer } from '@/contexts/audio-player-context-simple';
+import { useAudioPlayer } from '@/contexts/audio-player-context';
 
 interface Track {
   id: string;
@@ -351,38 +351,23 @@ export function SpotifyPlayer({
       <audio ref={audioRef} preload="metadata" />
       
       {/* Player Principal */}
-      <div className="relative bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white shadow-2xl border-t border-purple-500/30 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920&h=400&fit=crop&crop=center')] bg-cover bg-center mix-blend-overlay"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 via-transparent to-purple-900/90"></div>
-        </div>
-        
-        {/* Animated Background Effects */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-4 -left-4 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-4 -right-4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-500"></div>
-        </div>
-
-        {/* Content Container */}
-        <div className="relative z-10">
-          {/* Barra de Progresso */}
-          <div className="w-full bg-white/20 h-1 cursor-pointer group backdrop-blur-sm" ref={progressRef} onClick={handleProgressClick}>
+      <div className="bg-gradient-to-r from-gray-900 to-black text-white shadow-2xl border-t border-gray-700">
+        {/* Barra de Progresso */}
+        <div className="w-full bg-gray-600 h-1 cursor-pointer group" ref={progressRef} onClick={handleProgressClick}>
           <div 
-            className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 h-full transition-all duration-300 group-hover:from-pink-400 group-hover:via-purple-400 group-hover:to-indigo-400 relative shadow-lg"
+            className="bg-green-500 h-full transition-all duration-100 group-hover:bg-green-400 relative"
             style={{ width: `${progressPercentage}%` }}
           >
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg" />
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-4 py-3 relative z-10">
+        <div className="flex items-center justify-between px-4 py-3">
           {/* Informações da Música */}
           <div className="flex items-center space-x-4 flex-1 min-w-0">
             <div className="flex-shrink-0">
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-500 rounded-lg flex items-center justify-center shadow-lg ring-2 ring-white/20 backdrop-blur-sm">
-                <span className="text-lg font-bold drop-shadow-sm">
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <span className="text-lg font-bold">
                   {currentTrack.title.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -401,7 +386,7 @@ export function SpotifyPlayer({
               variant="ghost"
               size="sm"
               onClick={toggleFavorite}
-              className={`text-gray-300 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all ${playerState.isFavorite ? 'text-pink-400 bg-pink-500/20' : ''}`}
+              className={`text-gray-400 hover:text-white ${playerState.isFavorite ? 'text-green-500' : ''}`}
             >
               <Heart className={`h-5 w-5 ${playerState.isFavorite ? 'fill-current' : ''}`} />
             </Button>
@@ -414,7 +399,7 @@ export function SpotifyPlayer({
                 variant="ghost"
                 size="sm"
                 onClick={toggleShuffle}
-                className={`text-gray-300 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all ${playerState.isShuffled ? 'text-pink-400 bg-pink-500/20' : ''}`}
+                className={`text-gray-400 hover:text-white ${playerState.isShuffled ? 'text-green-500' : ''}`}
               >
                 <Shuffle className="h-4 w-4" />
               </Button>
@@ -423,7 +408,7 @@ export function SpotifyPlayer({
                 variant="ghost"
                 size="sm"
                 onClick={handlePrevious}
-                className="text-gray-300 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all rounded-full"
+                className="text-gray-400 hover:text-white"
               >
                 <SkipBack className="h-5 w-5" />
               </Button>
@@ -431,7 +416,7 @@ export function SpotifyPlayer({
               <Button
                 onClick={togglePlay}
                 disabled={uiState.isLoading || uiState.hasError}
-                className="bg-gradient-to-r from-white to-gray-100 text-black hover:from-gray-100 hover:to-white w-12 h-12 rounded-full flex items-center justify-center transition-all transform hover:scale-105 shadow-lg ring-2 ring-white/30"
+                className="bg-white text-black hover:bg-gray-200 w-10 h-10 rounded-full flex items-center justify-center transition-all"
               >
                 {uiState.isLoading ? (
                   <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -446,7 +431,7 @@ export function SpotifyPlayer({
                 variant="ghost"
                 size="sm"
                 onClick={handleNext}
-                className="text-gray-300 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all rounded-full"
+                className="text-gray-400 hover:text-white"
               >
                 <SkipForward className="h-5 w-5" />
               </Button>
@@ -455,7 +440,7 @@ export function SpotifyPlayer({
                 variant="ghost"
                 size="sm"
                 onClick={toggleRepeat}
-                className={`text-gray-300 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all ${playerState.repeatMode !== 'none' ? 'text-pink-400 bg-pink-500/20' : ''}`}
+                className={`text-gray-400 hover:text-white ${playerState.repeatMode !== 'none' ? 'text-green-500' : ''}`}
               >
                 {playerState.repeatMode === 'one' ? (
                   <Repeat1 className="h-4 w-4" />
@@ -480,7 +465,7 @@ export function SpotifyPlayer({
                 variant="ghost"
                 size="sm"
                 onClick={toggleLyrics}
-                className={`text-gray-300 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all ${uiState.showLyricsPanel ? 'text-pink-400 bg-pink-500/20' : ''}`}
+                className={`text-gray-400 hover:text-white ${uiState.showLyricsPanel ? 'text-green-500' : ''}`}
                 title="Mostrar/Ocultar letras"
               >
                 <Mic2 className="h-4 w-4" />
@@ -530,7 +515,7 @@ export function SpotifyPlayer({
 
         {/* Error State */}
         {uiState.hasError && (
-          <div className="px-4 py-2 bg-red-600/90 backdrop-blur-sm text-white text-sm flex items-center justify-between relative z-20">
+          <div className="px-4 py-2 bg-red-600 text-white text-sm flex items-center justify-between">
             <span>⚠️ Erro ao carregar áudio. Verifique a conexão.</span>
             <Button
               variant="ghost"
@@ -542,7 +527,6 @@ export function SpotifyPlayer({
             </Button>
           </div>
         )}
-        </div>
       </div>
 
       {/* Painel de Letras Simples */}

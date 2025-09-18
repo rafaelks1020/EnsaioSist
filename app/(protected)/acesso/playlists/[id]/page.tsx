@@ -54,7 +54,7 @@ export default function PlaylistDetailsPage() {
   const [lyricsPanelSize, setLyricsPanelSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [isFullscreen, setIsFullscreen] = useState(false);
   
-  const { playPlaylist, playPlaylistHymn, isVisible } = usePlaylistPlayer();
+  const { playPlaylist, playPlaylistHymn, currentTrack, isPlaying } = usePlaylistPlayer();
 
   useEffect(() => {
     if (playlistId) {
@@ -140,12 +140,12 @@ export default function PlaylistDetailsPage() {
 
   // Detectar quando o player parar para esconder a letra
   useEffect(() => {
-    if (!isVisible && showLyricsPanel) {
+    if (!currentTrack && showLyricsPanel) {
       setShowLyricsPanel(false);
       setCurrentPlayingHymn(null);
       setIsFullscreen(false);
     }
-  }, [isVisible, showLyricsPanel]);
+  }, [currentTrack, showLyricsPanel]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR');
@@ -182,7 +182,7 @@ export default function PlaylistDetailsPage() {
   const tracksWithAudio = playlist.items.filter(item => item.hymn.mp3Url);
 
   return (
-    <div className={`space-y-6 ${isVisible ? 'pb-32' : ''}`}>
+    <div className={`space-y-6 ${currentTrack ? 'pb-32' : ''}`}>
       {/* Header */}
       <div className="flex items-center gap-4">
         <button

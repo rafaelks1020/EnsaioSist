@@ -60,8 +60,9 @@ export default function RehearsalDetailsReadOnly() {
   const [currentPlayingHymn, setCurrentPlayingHymn] = useState<RehearsalHymn | null>(null);
   const [lyricsPanelSize, setLyricsPanelSize] = useState<'small' | 'medium' | 'large'>('medium');
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPlayerVisible, setIsPlayerVisible] = useState(false);
   
-  const { playHymns, playHymn, isVisible } = useHymnPlayer();
+  const { playHymns, playHymn, currentTrack, isPlaying } = useHymnPlayer();
 
   useEffect(() => {
     fetchRehearsalData();
@@ -111,12 +112,14 @@ export default function RehearsalDetailsReadOnly() {
 
   // Detectar quando o player parar para esconder a letra
   useEffect(() => {
-    if (!isVisible && showLyricsPanel) {
+    setIsPlayerVisible(!!currentTrack && isPlaying);
+    
+    if (!currentTrack && showLyricsPanel) {
       setShowLyricsPanel(false);
       setCurrentPlayingHymn(null);
       setIsFullscreen(false);
     }
-  }, [isVisible, showLyricsPanel]);
+  }, [currentTrack, isPlaying, showLyricsPanel]);
 
   // Configurações de tamanho do painel
   const panelSizes = {
@@ -168,7 +171,7 @@ export default function RehearsalDetailsReadOnly() {
   }
 
   return (
-    <div className={`container mx-auto px-4 py-8 max-w-4xl ${isVisible ? 'pb-32' : ''}`}>
+    <div className={`container mx-auto px-4 py-8 max-w-4xl ${isPlayerVisible ? 'pb-32' : ''}`}>
       <div className="mb-6">
         <Button 
           onClick={() => router.back()}

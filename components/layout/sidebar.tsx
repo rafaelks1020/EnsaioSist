@@ -97,7 +97,7 @@ export function Sidebar({ children }: SidebarProps) {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-purple-100 via-indigo-50 to-pink-100">
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 flex z-50 lg:hidden ${sidebarOpen ? '' : 'hidden'}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
@@ -134,10 +134,10 @@ export function Sidebar({ children }: SidebarProps) {
 
       {/* Main content */}
       <div className="lg:pl-64 flex flex-col flex-1 min-h-screen">
-        <div className="sticky top-0 z-10 lg:hidden px-4 py-3 bg-white border-b border-gray-200 shadow-sm">
+        <div className="sticky top-0 z-10 lg:hidden px-4 py-3 bg-white/90 backdrop-blur-md border-b border-white/20 shadow-lg">
           <button
             type="button"
-            className="inline-flex items-center justify-center h-10 w-10 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-colors"
+            className="inline-flex items-center justify-center h-10 w-10 rounded-md text-purple-500 hover:text-purple-700 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500 transition-colors"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu className="h-6 w-6" />
@@ -161,79 +161,86 @@ interface SidebarContentProps {
 
 function SidebarContent({ navItems, pathname, session, onSignOut, isAcessoArea }: SidebarContentProps) {
   return (
-    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 pt-5 pb-4 overflow-y-auto">
-      <div className="flex items-center flex-shrink-0 px-4 mb-2">
-        <Music className="h-8 w-8 text-indigo-600" />
-        <span className="ml-2 text-lg sm:text-xl font-semibold text-gray-900">
-          Ensaios Igreja
-        </span>
-      </div>
+    <div className="flex flex-col flex-grow relative">
+      {/* Background Musical */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-indigo-900 to-pink-900"></div>
+      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=800&fit=crop&crop=center')] bg-cover bg-center opacity-20"></div>
+      <div className="absolute inset-0 backdrop-blur-sm"></div>
       
-      <div className="mt-5 flex-grow flex flex-col">
-        <nav className="flex-1 px-2 space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-            
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`${
-                  isActive
-                    ? 'bg-indigo-100 text-indigo-900'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                } group flex items-center px-3 py-3 text-sm font-medium rounded-md transition-colors touch-manipulation`}
-              >
-                <Icon
-                  className={`${
-                    isActive ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500'
-                  } mr-3 flex-shrink-0 h-6 w-6`}
-                />
-                <span className="truncate">{item.name}</span>
-              </Link>
-            );
-          })}
-        </nav>
+      <div className="relative z-10 flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
+        <div className="flex items-center flex-shrink-0 px-4 mb-2">
+          <Music className="h-8 w-8 text-pink-400" />
+          <span className="ml-2 text-lg sm:text-xl font-semibold text-white drop-shadow-lg">
+            Ensaios Igreja
+          </span>
+        </div>
         
-        <div className="flex-shrink-0 px-2">
-          <div className="border-t border-gray-200 pt-4">
-            <div className="px-2 space-y-1">
-              <div className="text-sm text-gray-900 font-medium truncate">
-                {session.user.name}
-              </div>
-              <div className="text-xs text-gray-500 mb-3">
-                {session.user.role === Role.ADMIN ? 'Administrador' : 
-                 session.user.role === Role.USUARIO ? 'Usuário' : 'Adolescente'}
-              </div>
+        <div className="mt-5 flex-grow flex flex-col">
+          <nav className="flex-1 px-2 space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
               
-              {!isAcessoArea && session.user.role !== Role.ADOLESCENTE && (
+              return (
                 <Link
-                  href="/acesso/hinos"
-                  className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-3 py-3 text-sm font-medium rounded-md transition-colors touch-manipulation"
+                  key={item.name}
+                  href={item.href}
+                  className={`${
+                    isActive
+                      ? 'bg-white/20 text-white border-l-4 border-pink-400'
+                      : 'text-gray-200 hover:bg-white/10 hover:text-white'
+                  } group flex items-center px-3 py-3 text-sm font-medium rounded-md transition-all touch-manipulation backdrop-blur-sm`}
                 >
-                  <Music className="text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-6 w-6" />
-                  <span className="truncate">Área de Acesso</span>
+                  <Icon
+                    className={`${
+                      isActive ? 'text-pink-400' : 'text-gray-300 group-hover:text-white'
+                    } mr-3 flex-shrink-0 h-6 w-6`}
+                  />
+                  <span className="truncate">{item.name}</span>
                 </Link>
-              )}
-              
-              {isAcessoArea && (session.user.role === Role.ADMIN || session.user.role === Role.USUARIO) && (
-                <Link
-                  href="/app/hinos"
-                  className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-3 py-3 text-sm font-medium rounded-md transition-colors touch-manipulation"
+              );
+            })}
+          </nav>
+          
+          <div className="flex-shrink-0 px-2">
+            <div className="border-t border-white/20 pt-4">
+              <div className="px-2 space-y-1">
+                <div className="text-sm text-white font-medium truncate drop-shadow">
+                  {session.user.name}
+                </div>
+                <div className="text-xs text-gray-200 mb-3">
+                  {session.user.role === Role.ADMIN ? 'Administrador' : 
+                   session.user.role === Role.USUARIO ? 'Usuário' : 'Adolescente'}
+                </div>
+                
+                {!isAcessoArea && session.user.role !== Role.ADOLESCENTE && (
+                  <Link
+                    href="/acesso/hinos"
+                    className="text-gray-200 hover:bg-white/10 hover:text-white group flex items-center px-3 py-3 text-sm font-medium rounded-md transition-all touch-manipulation backdrop-blur-sm"
+                  >
+                    <Music className="text-gray-300 group-hover:text-white mr-3 flex-shrink-0 h-6 w-6" />
+                    <span className="truncate">Área de Acesso</span>
+                  </Link>
+                )}
+                
+                {isAcessoArea && (session.user.role === Role.ADMIN || session.user.role === Role.USUARIO) && (
+                  <Link
+                    href="/app/hinos"
+                    className="text-gray-200 hover:bg-white/10 hover:text-white group flex items-center px-3 py-3 text-sm font-medium rounded-md transition-all touch-manipulation backdrop-blur-sm"
+                  >
+                    <Users className="text-gray-300 group-hover:text-white mr-3 flex-shrink-0 h-6 w-6" />
+                    <span className="truncate">Área Admin</span>
+                  </Link>
+                )}
+                
+                <Button
+                  className="w-full justify-start text-gray-200 hover:bg-white/10 hover:text-white bg-transparent border-none px-3 py-3 h-auto transition-all touch-manipulation backdrop-blur-sm"
+                  onClick={onSignOut}
                 >
-                  <Users className="text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-6 w-6" />
-                  <span className="truncate">Área Admin</span>
-                </Link>
-              )}
-              
-              <Button
-                className="w-full justify-start text-gray-600 hover:bg-gray-50 hover:text-gray-900 bg-transparent border-none px-3 py-3 h-auto transition-colors touch-manipulation"
-                onClick={onSignOut}
-              >
-                <LogOut className="mr-3 h-6 w-6 flex-shrink-0" />
-                <span className="truncate">Sair</span>
-              </Button>
+                  <LogOut className="mr-3 h-6 w-6 flex-shrink-0" />
+                  <span className="truncate">Sair</span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

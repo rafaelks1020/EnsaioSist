@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Plus, Search, Edit, Trash2, Music, Play, Download, Eye, Mic2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useHymnPlayer } from '@/hooks/use-audio-player';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 interface Hymn {
   id: string;
@@ -197,7 +198,7 @@ export default function HinosPage() {
                                   setCurrentPlayingHymn(hymn);
                                   setShowLyricsPanel(true);
                                 }}
-                                className="flex-1 p-3 text-purple-300 hover:bg-purple-500/20 rounded border border-purple-500/30 text-center touch-manipulation backdrop-blur-sm transition-all"
+                                className="flex-1 p-3 text-white hover:bg-pink-600/30 rounded border border-pink-500/50 text-center touch-manipulation backdrop-blur-sm transition-all"
                                 title="Ver letras sincronizadas"
                               >
                                 <Mic2 className="h-4 w-4 mx-auto" />
@@ -207,7 +208,7 @@ export default function HinosPage() {
                             <a
                               href={hymn.mp3Url}
                               download
-                              className="flex-1 p-3 text-blue-300 hover:bg-blue-500/20 rounded border border-blue-500/30 text-center touch-manipulation backdrop-blur-sm transition-all"
+                              className="flex-1 p-3 text-white hover:bg-indigo-600/30 rounded border border-indigo-500/50 text-center touch-manipulation backdrop-blur-sm transition-all"
                               title="Baixar MP3"
                             >
                               <Download className="h-4 w-4 mx-auto" />
@@ -215,7 +216,7 @@ export default function HinosPage() {
                           </>
                         )}
                         <Link href={`/app/hinos/${hymn.id}`} className="flex-1">
-                          <Button className="w-full h-9 rounded-md px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground touch-manipulation" title="Ver Detalhes">
+                          <Button className={`w-full h-9 rounded-md px-3 touch-manipulation ${musicalButton('secondary')}`} title="Ver Detalhes">
                             <Eye className="h-4 w-4" />
                           </Button>
                         </Link>
@@ -238,7 +239,7 @@ export default function HinosPage() {
                           <>
                             <button
                               onClick={() => playHymn(hymn)}
-                              className="p-2 text-green-600 hover:bg-green-50 rounded border touch-manipulation"
+                              className={`p-2 rounded border touch-manipulation ${musicalButton('action')}`}
                               title="Tocar no Player"
                             >
                               <Play className="h-4 w-4" />
@@ -251,7 +252,7 @@ export default function HinosPage() {
                                   setCurrentPlayingHymn(hymn);
                                   setShowLyricsPanel(true);
                                 }}
-                                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded border touch-manipulation"
+                                className={`p-2 rounded border touch-manipulation ${musicalButton('primary')}`}
                                 title="Ver letras sincronizadas"
                               >
                                 <Mic2 className="h-4 w-4" />
@@ -261,7 +262,7 @@ export default function HinosPage() {
                             <a
                               href={hymn.mp3Url}
                               download
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded border touch-manipulation"
+                              className={`p-2 rounded border touch-manipulation ${musicalButton('info')}`}
                               title="Baixar MP3"
                             >
                               <Download className="h-4 w-4" />
@@ -269,18 +270,18 @@ export default function HinosPage() {
                           </>
                         )}
                         <Link href={`/app/hinos/${hymn.id}`}>
-                          <Button className="h-9 rounded-md px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground touch-manipulation" title="Ver Detalhes">
+                          <Button className={`h-9 rounded-md px-3 touch-manipulation ${musicalButton('secondary')}`} title="Ver Detalhes">
                             <Eye className="h-4 w-4" />
                           </Button>
                         </Link>
                         <Link href={`/app/hinos/${hymn.id}/editar`}>
-                          <Button className="h-9 rounded-md px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground touch-manipulation">
+                          <Button className={`h-9 rounded-md px-3 touch-manipulation ${musicalButton('info')}`}>
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
                         <Button
                           onClick={() => handleDelete(hymn.id, hymn.title)}
-                          className="h-9 rounded-md px-3 bg-destructive text-destructive-foreground hover:bg-destructive/90 touch-manipulation"
+                          className={`h-9 rounded-md px-3 touch-manipulation ${musicalButton('danger')}`}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -295,17 +296,17 @@ export default function HinosPage() {
           {pagination.totalPages > 1 && (
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
               <Button
-                className="w-full sm:w-auto border border-input bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                className={`w-full sm:w-auto ${pagination.page === 1 ? musicalButton('disabled') : musicalButton('secondary')}`}
                 disabled={pagination.page === 1}
                 onClick={() => fetchHymns(pagination.page - 1, search)}
               >
                 Anterior
               </Button>
-              <span className="px-4 py-2 text-sm text-gray-600">
+              <span className="px-4 py-2 text-sm text-white bg-white/20 rounded-lg backdrop-blur-sm">
                 Página {pagination.page} de {pagination.totalPages}
               </span>
               <Button
-                className="w-full sm:w-auto border border-input bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                className={`w-full sm:w-auto ${pagination.page === pagination.totalPages ? musicalButton('disabled') : musicalButton('secondary')}`}
                 disabled={pagination.page === pagination.totalPages}
                 onClick={() => fetchHymns(pagination.page + 1, search)}
               >

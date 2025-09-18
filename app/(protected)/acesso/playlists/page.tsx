@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Music, List, Users, Lock } from 'lucide-react';
 import { usePlaylistPlayer } from '@/hooks/use-audio-player';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 interface Hymn {
   id: string;

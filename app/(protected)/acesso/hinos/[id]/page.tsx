@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Play, Download, Music, Calendar, User, FileText } from 'lucide-react';
 import { useHymnPlayer } from '@/hooks/use-audio-player';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 interface Hymn {
   id: string;
@@ -168,7 +169,7 @@ export default function PublicHymnDetailsPage() {
       <div className="flex items-center gap-4 mb-6">
         <Button
           onClick={() => router.back()}
-          className="p-2 bg-gray-600 hover:bg-gray-700"
+          className={`p-2 ${musicalButton('back')}`}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
@@ -201,7 +202,7 @@ export default function PublicHymnDetailsPage() {
                   </Button>
                   <Button
                     onClick={handleDownload}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className={`${musicalButton('action')}`}
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Baixar MP3

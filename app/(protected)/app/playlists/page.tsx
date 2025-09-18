@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Play, Edit, Trash2, Music, List, Users, Lock } from 'lucide-react';
 import { usePlaylistPlayer } from '@/hooks/use-audio-player';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 interface Hymn {
   id: string;
@@ -201,11 +202,11 @@ export default function PlaylistsPage() {
                 </label>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
-                <Button type="submit" className="w-full sm:w-auto">Criar</Button>
+                <Button type="submit" className={`w-full sm:w-auto ${musicalButton('primary')}`}>Criar</Button>
                 <Button
                   type="button"
                   onClick={() => setShowCreateForm(false)}
-                  className="w-full sm:w-auto bg-gray-600 hover:bg-gray-700"
+                  className={`w-full sm:w-auto ${musicalButton('secondary')}`}
                 >
                   Cancelar
                 </Button>
@@ -269,13 +270,13 @@ export default function PlaylistsPage() {
                   <div className="flex gap-2">
                     <a
                       href={`/app/playlists/${playlist.id}`}
-                      className="flex-1 sm:flex-none p-2 text-blue-600 hover:bg-blue-50 rounded border text-center touch-manipulation"
+                      className={`flex-1 sm:flex-none p-2 rounded border text-center touch-manipulation ${musicalButton('info')}`}
                     >
                       <Edit className="h-4 w-4 mx-auto" />
                     </a>
                     <Button
                       onClick={() => playPlaylist(playlist)}
-                      className="flex-1 sm:flex-none p-2 bg-green-600 hover:bg-green-700 text-white touch-manipulation"
+                      className={`flex-1 sm:flex-none p-2 touch-manipulation ${musicalButton('action')}`}
                       disabled={playlist._count.items === 0}
                     >
                       <Play className="h-4 w-4" />

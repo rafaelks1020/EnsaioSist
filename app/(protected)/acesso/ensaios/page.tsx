@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Clock, Music } from 'lucide-react';
+import { Calendar, Clock, Music, Users, ChevronRight } from 'lucide-react';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 import { toast } from 'sonner';
 import { Weekday } from '@/lib/roles';
 

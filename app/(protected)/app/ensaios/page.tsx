@@ -19,6 +19,7 @@ import {
 import { Plus, Edit, Trash2, Calendar, Clock, Music } from 'lucide-react';
 import { toast } from 'sonner';
 import { Weekday } from '@/lib/roles';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 interface RehearsalSlot {
   id: string;

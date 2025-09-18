@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Music, Play, Calendar, Clock, Download } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Music, Users, Mic2, Play, Download } from 'lucide-react';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 import { Weekday } from '@/lib/roles';
 import { useHymnPlayer } from '@/hooks/use-audio-player';
 
@@ -175,14 +176,14 @@ export default function RehearsalDetailsReadOnly() {
       <div className="mb-6">
         <Button 
           onClick={() => router.back()}
-          className="mb-4 bg-gray-600 hover:bg-gray-700"
+          className={`mb-4 ${musicalButton('back')}`}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
         
         <div className="flex items-center gap-4 mb-4">
-          <Calendar className="h-6 w-6 text-blue-600" />
+          <Calendar className="h-6 w-6 text-pink-400" />
           <div>
             <h1 className="text-2xl font-bold">
               Ensaio de {WEEKDAY_LABELS[rehearsal.weekday]}
@@ -429,7 +430,7 @@ export default function RehearsalDetailsReadOnly() {
                 )}
                 <Button 
                   onClick={closeHymnModal}
-                  className="bg-gray-600 hover:bg-gray-700"
+                  className={`${musicalButton('back')}`}
                 >
                   Fechar
                 </Button>

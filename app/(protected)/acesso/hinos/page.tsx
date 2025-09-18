@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Music, Search, Volume2, Play, Download, Eye, Mic2 } from 'lucide-react';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 import { toast } from 'sonner';
 import { useHymnPlayer } from '@/hooks/use-audio-player';
 

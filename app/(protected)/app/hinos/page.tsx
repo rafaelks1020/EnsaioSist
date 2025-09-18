@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Search, Edit, Trash2, Music, Play, Download, Eye } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Music, Play, Download, Eye, Mic2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useHymnPlayer } from '@/hooks/use-audio-player';
 
@@ -38,6 +38,8 @@ export default function HinosPage() {
   });
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showLyricsPanel, setShowLyricsPanel] = useState(false);
+  const [currentPlayingHymn, setCurrentPlayingHymn] = useState<Hymn | null>(null);
   
   const { playHymn, isVisible } = useHymnPlayer();
 
@@ -178,6 +180,21 @@ export default function HinosPage() {
                             >
                               <Play className="h-4 w-4 mx-auto" />
                             </button>
+                            
+                            {hymn.lyrics && (
+                              <button
+                                onClick={() => {
+                                  playHymn(hymn);
+                                  setCurrentPlayingHymn(hymn);
+                                  setShowLyricsPanel(true);
+                                }}
+                                className="flex-1 p-3 text-indigo-600 hover:bg-indigo-50 rounded border text-center touch-manipulation"
+                                title="Ver letras sincronizadas"
+                              >
+                                <Mic2 className="h-4 w-4 mx-auto" />
+                              </button>
+                            )}
+                            
                             <a
                               href={hymn.mp3Url}
                               download
@@ -217,6 +234,21 @@ export default function HinosPage() {
                             >
                               <Play className="h-4 w-4" />
                             </button>
+                            
+                            {hymn.lyrics && (
+                              <button
+                                onClick={() => {
+                                  playHymn(hymn);
+                                  setCurrentPlayingHymn(hymn);
+                                  setShowLyricsPanel(true);
+                                }}
+                                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded border touch-manipulation"
+                                title="Ver letras sincronizadas"
+                              >
+                                <Mic2 className="h-4 w-4" />
+                              </button>
+                            )}
+                            
                             <a
                               href={hymn.mp3Url}
                               download

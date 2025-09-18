@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Music, Search, Volume2, Play, Download, Eye } from 'lucide-react';
+import { Music, Search, Volume2, Play, Download, Eye, Mic2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useHymnPlayer } from '@/hooks/use-audio-player';
 
@@ -184,6 +184,22 @@ export default function AcessoHinosPage() {
                         <Play className="h-4 w-4" />
                         Play
                       </button>
+                      
+                      {hymn.lyrics && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            playHymnWithLyrics(hymn);
+                            setShowLyricsPanel(true);
+                          }}
+                          className="flex items-center gap-1 text-sm text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition-colors"
+                          title="Ver letras sincronizadas"
+                        >
+                          <Mic2 className="h-4 w-4" />
+                          Letras
+                        </button>
+                      )}
+                      
                       <a
                         href={hymn.mp3Url}
                         download

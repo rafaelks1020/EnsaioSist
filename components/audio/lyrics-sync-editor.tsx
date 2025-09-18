@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAutoLyricsSync, LyricTimestamp } from '@/hooks/use-auto-lyrics-sync';
+import { useLyricsSyncService } from '@/lib/lyrics-sync-service';
 
 interface LyricsSyncEditorProps {
   hymn: {
@@ -29,9 +30,10 @@ interface LyricsSyncEditorProps {
   };
   onSave: (timestamps: LyricTimestamp[]) => void;
   onCancel: () => void;
+  onLoadExisting?: (timestamps: LyricTimestamp[]) => void;
 }
 
-export function LyricsSyncEditor({ hymn, onSave, onCancel }: LyricsSyncEditorProps) {
+export function LyricsSyncEditor({ hymn, onSave, onCancel, onLoadExisting }: LyricsSyncEditorProps) {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [timestamps, setTimestamps] = useState<LyricTimestamp[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -39,15 +41,40 @@ export function LyricsSyncEditor({ hymn, onSave, onCancel }: LyricsSyncEditorPro
   const [duration, setDuration] = useState(0);
   const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(null);
   const [isAutoSyncing, setIsAutoSyncing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasExistingSync, setHasExistingSync] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const { syncLyrics, improveSyncWithFeedback, isProcessing, progress } = useAutoLyricsSync();
+  const lyricsSyncService = useLyricsSyncService();
 
   // Processar letras em linhas
   const lyricsLines = hymn.lyrics
     .replace(/<[^>]*>/g, '')
     .split('\n')
     .filter(line => line.trim());
+
+  // Carregar sincronização existente ao montar componente
+  useEffect(() => {
+    const loadExistingSync = async () => {
+      setIsLoading(true);
+      try {
+        const existingTimestamps = await lyricsSyncService.loadAndApplySync(hymn.id);
+        if (existingTimestamps && existingTimestamps.length > 0) {
+          setTimestamps(existingTimestamps);
+          setHasExistingSync(true);
+          onLoadExisting?.(existingTimestamps);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar sincronização existente:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadExistingSync();
+  }, [hymn.id, lyricsSyncService, onLoadExisting]);
 
   // Carregar arquivo de áudio
   useEffect(() => {
@@ -161,13 +188,44 @@ export function LyricsSyncEditor({ hymn, onSave, onCancel }: LyricsSyncEditorPro
   };
 
   // Salvar sincronização
-  const handleSave = () => {
+  const handleSave = async () => {
     if (timestamps.length === 0) {
       alert('Nenhuma sincronização para salvar');
       return;
     }
 
-    onSave(timestamps);
+    setIsSaving(true);
+    try {
+      // Determinar método de sincronização
+      const hasAutoTimestamps = timestamps.some(t => t.confidence > 0.7);
+      const hasManualTimestamps = timestamps.some(t => t.confidence >= 0.9);
+      
+      let syncMethod: 'automatic' | 'manual' | 'hybrid' = 'manual';
+      if (hasAutoTimestamps && hasManualTimestamps) syncMethod = 'hybrid';
+      else if (hasAutoTimestamps) syncMethod = 'automatic';
+
+      // Calcular confiança média
+      const avgConfidence = timestamps.reduce((sum, t) => sum + t.confidence, 0) / timestamps.length;
+
+      // Salvar no banco de dados
+      const result = await lyricsSyncService.saveLyricsSync(hymn.id, {
+        timestamps,
+        syncMethod,
+        confidence: avgConfidence
+      });
+
+      if (result.success) {
+        alert(result.message || 'Sincronização salva com sucesso!');
+        onSave(timestamps);
+      } else {
+        alert(result.message || 'Erro ao salvar sincronização');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+      alert('Erro ao salvar sincronização');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Inicializar timestamps vazios
@@ -193,6 +251,9 @@ export function LyricsSyncEditor({ hymn, onSave, onCancel }: LyricsSyncEditorPro
 
   const currentLineIndex = getCurrentLineIndex();
 
+  // Calcular qualidade da sincronização
+  const syncQuality = lyricsSyncService.calculateSyncQuality(timestamps);
+
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
@@ -214,6 +275,27 @@ export function LyricsSyncEditor({ hymn, onSave, onCancel }: LyricsSyncEditorPro
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {isLoading && (
+            <div className="flex items-center gap-2 mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+              <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+              <span className="text-blue-800">Carregando sincronização existente...</span>
+            </div>
+          )}
+
+          {hasExistingSync && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded">
+              <div className="flex items-center gap-2 mb-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span className="text-green-800 font-medium">Sincronização Existente Carregada</span>
+              </div>
+              <div className="text-sm text-green-700">
+                {timestamps.length} linhas sincronizadas • 
+                Qualidade: <span className="font-medium capitalize">{syncQuality.qualityScore}</span> • 
+                Confiança média: {Math.round(syncQuality.averageConfidence * 100)}%
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-3">
             <Button
               onClick={handleAutoSync}
@@ -228,14 +310,42 @@ export function LyricsSyncEditor({ hymn, onSave, onCancel }: LyricsSyncEditorPro
               Sincronização Automática
             </Button>
             
-            <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">
-              <Save className="h-4 w-4 mr-2" />
+            <Button 
+              onClick={handleSave} 
+              disabled={isSaving || timestamps.length === 0}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
               Salvar Sincronização
             </Button>
             
             <Button onClick={onCancel} className="border">
               Cancelar
             </Button>
+
+            {/* Indicador de qualidade */}
+            {timestamps.length > 0 && (
+              <div className="flex items-center gap-2 ml-auto">
+                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  syncQuality.qualityScore === 'excellent' ? 'bg-green-100 text-green-800' :
+                  syncQuality.qualityScore === 'good' ? 'bg-blue-100 text-blue-800' :
+                  syncQuality.qualityScore === 'fair' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-red-100 text-red-800'
+                }`}>
+                  {syncQuality.qualityScore === 'excellent' ? '🎯 Excelente' :
+                   syncQuality.qualityScore === 'good' ? '✅ Boa' :
+                   syncQuality.qualityScore === 'fair' ? '⚠️ Regular' :
+                   '❌ Ruim'}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {Math.round(syncQuality.averageConfidence * 100)}%
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Progresso da sincronização */}

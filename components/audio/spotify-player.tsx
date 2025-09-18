@@ -23,6 +23,7 @@ import { useAudioPlayer } from '@/contexts/audio-player-context';
 import { SyncedLyricsDisplay } from './synced-lyrics-display';
 import { MobileLyricsViewer } from './mobile-lyrics-viewer';
 import { LyricsSyncEditor } from './lyrics-sync-editor';
+import { useLyricsSyncService } from '@/lib/lyrics-sync-service';
 
 interface Track {
   id: string;
@@ -63,10 +64,12 @@ export function SpotifyPlayer({
   const [isFavorite, setIsFavorite] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showSyncEditor, setShowSyncEditor] = useState(false);
+  const [syncedTimestamps, setSyncedTimestamps] = useState<any[]>([]);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const { setCurrentTime: setContextTime } = useAudioPlayer();
+  const lyricsSyncService = useLyricsSyncService();
 
   const currentTrack = tracks[currentIndex];
 
@@ -611,20 +614,15 @@ export function SpotifyPlayer({
                 mp3Url: currentTrack.url
               }}
               onSave={async (timestamps) => {
-                // Aqui você pode salvar os timestamps no banco de dados
                 console.log('Timestamps salvos:', timestamps);
-                
-                // Simular salvamento
-                try {
-                  // await saveTimestamps(currentTrack.id, timestamps);
-                  alert('Sincronização salva com sucesso!');
-                  setShowSyncEditor(false);
-                } catch (error) {
-                  console.error('Erro ao salvar sincronização:', error);
-                  alert('Erro ao salvar sincronização');
-                }
+                setSyncedTimestamps(timestamps);
+                setShowSyncEditor(false);
               }}
               onCancel={() => setShowSyncEditor(false)}
+              onLoadExisting={(timestamps) => {
+                setSyncedTimestamps(timestamps);
+                console.log('Sincronização existente carregada:', timestamps);
+              }}
             />
           </div>
         </div>

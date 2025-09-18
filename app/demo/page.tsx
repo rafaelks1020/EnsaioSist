@@ -1,3 +1,5 @@
+'use client';
+
 import { AdvancedLyricsPlayer } from '@/components/audio/advanced-lyrics-player';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -162,7 +164,11 @@ The hour I first believed.`,
           <AdvancedLyricsPlayer
             hymnId={sampleHymn.id}
             audioUrl={sampleHymn.mp3Url}
-            onOpenSyncEditor={() => alert('Editor de sincronização seria aberto aqui!')}
+            onOpenSyncEditor={() => {
+              if (typeof window !== 'undefined') {
+                alert('Editor de sincronização seria aberto aqui!');
+              }
+            }}
             className="max-w-4xl mx-auto"
           />
         </CardContent>

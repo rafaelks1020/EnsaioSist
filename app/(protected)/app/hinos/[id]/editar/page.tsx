@@ -10,6 +10,7 @@ import { ArrowLeft, Save, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 // Import TipTap editor dynamically to avoid SSR issues
 const HymnEditor = dynamic(() => import('@/components/forms/rich-text-editor'), {
@@ -149,41 +150,46 @@ export default function EditHymnPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="h-8 bg-gray-200 animate-pulse rounded" />
-        <div className="h-64 bg-gray-200 animate-pulse rounded" />
-        <div className="h-32 bg-gray-200 animate-pulse rounded" />
+      <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
+        <div className="relative z-10 space-y-6 p-4 sm:p-6">
+          <div className="h-8 bg-slate-200 animate-pulse rounded" />
+          <div className="h-64 bg-slate-200 animate-pulse rounded" />
+          <div className="h-32 bg-slate-200 animate-pulse rounded" />
+        </div>
       </div>
     );
   }
 
   if (!hymn) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">Hino não encontrado</p>
-        <Link href="/app/hinos">
-          <Button className="mt-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
-        </Link>
+      <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
+        <div className="relative z-10 text-center py-8">
+          <p className="text-slate-600">Hino não encontrado</p>
+          <Link href="/app/hinos">
+            <Button className={`mt-4 ${musicalButton('secondary')}`}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
+      <div className="relative z-10 space-y-6 p-4 sm:p-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/app/hinos">
-            <Button className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-0">
+            <Button className={musicalButton('secondary')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Editar Hino</h1>
-            <p className="text-gray-600">
+            <h1 className="text-3xl font-semibold text-slate-800">Editar Hino</h1>
+            <p className="text-slate-500">
               Criado por {hymn.createdBy.name} em {new Date(hymn.createdAt).toLocaleDateString('pt-BR')}
             </p>
           </div>
@@ -192,7 +198,7 @@ export default function EditHymnPage() {
         <Button 
           onClick={handleSave} 
           disabled={saving || uploadingMp3}
-          className="bg-indigo-600 text-white hover:bg-indigo-700"
+          className={musicalButton('primary')}
         >
           <Save className="h-4 w-4 mr-2" />
           {saving ? 'Salvando...' : 'Salvar'}
@@ -201,10 +207,10 @@ export default function EditHymnPage() {
 
       <div className="grid gap-6">
         {/* Title */}
-        <Card>
+        <Card className={musicalCard()}>
           <CardHeader>
-            <CardTitle>Título</CardTitle>
-            <CardDescription>Nome do hino</CardDescription>
+            <CardTitle className={musicalText('gradient')}>Título</CardTitle>
+            <CardDescription className="text-purple-200">Nome do hino</CardDescription>
           </CardHeader>
           <CardContent>
             <Input
@@ -217,10 +223,10 @@ export default function EditHymnPage() {
         </Card>
 
         {/* Lyrics */}
-        <Card>
+        <Card className={musicalCard()}>
           <CardHeader>
-            <CardTitle>Letra</CardTitle>
-            <CardDescription>Use o editor para formatar a letra do hino</CardDescription>
+            <CardTitle className={musicalText('gradient')}>Letra</CardTitle>
+            <CardDescription className="text-purple-200">Use o editor para formatar a letra do hino</CardDescription>
           </CardHeader>
           <CardContent>
             <HymnEditor 
@@ -231,10 +237,10 @@ export default function EditHymnPage() {
         </Card>
 
         {/* MP3 Upload */}
-        <Card>
+        <Card className={musicalCard()}>
           <CardHeader>
-            <CardTitle>Áudio (MP3)</CardTitle>
-            <CardDescription>Arquivo de áudio do hino (opcional, máximo 50MB)</CardDescription>
+            <CardTitle className={musicalText('gradient')}>Áudio (MP3)</CardTitle>
+            <CardDescription className="text-purple-200">Arquivo de áudio do hino (opcional, máximo 50MB)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {hymn.mp3Url && !mp3File && (
@@ -300,6 +306,7 @@ export default function EditHymnPage() {
           </CardContent>
         </Card>
       </div>
+    </div>
     </div>
   );
 }

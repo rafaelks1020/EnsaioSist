@@ -13,10 +13,12 @@ import {
   Heart,
   Shuffle,
   Mic2,
-  X
+  X,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAudioPlayer } from '@/contexts/audio-player-context';
+import { useAudioPlayer } from '@/contexts/audio-player-context-simple';
 
 interface Track {
   id: string;
@@ -71,9 +73,17 @@ export function SpotifyPlayer({
   const progressRef = useRef<HTMLDivElement>(null);
   const lastUpdateTimeRef = useRef<number>(0);
   const isMountedRef = useRef(true);
+  const hasAutoPlayedRef = useRef(false);
+  const intervalRef = useRef<number | null>(null);
 
   // Hook do contexto
-  const { setCurrentTime: setContextTime } = useAudioPlayer();
+  const {
+    setCurrentTime: setContextTime,
+    isPlaying: globalIsPlaying,
+    play: contextPlay,
+    pause: contextPause,
+    setIsPlaying: setGlobalIsPlaying,
+  } = useAudioPlayer();
 
   // Valores memoizados para performance
   const currentTrack = useMemo(() => tracks[playerState.currentIndex], [tracks, playerState.currentIndex]);
@@ -121,6 +131,7 @@ export function SpotifyPlayer({
 
     const cleanup = () => {
       audio.removeEventListener('canplay', onCanPlay);
+      audio.removeEventListener('canplaythrough', onCanPlayThrough);
       audio.removeEventListener('error', onError);
       audio.removeEventListener('loadstart', onLoadStart);
     };
@@ -134,13 +145,23 @@ export function SpotifyPlayer({
     const onCanPlay = () => {
       if (isMountedRef.current) {
         setUiState(prev => ({ ...prev, isLoading: false }));
-        
-        if (autoPlay && playerState.isPlaying) {
-          audio.play().catch(error => {
+
+        // Autoplay apenas no primeiro carregamento da faixa, ou quando o global pede play
+        if (globalIsPlaying || (autoPlay && !hasAutoPlayedRef.current)) {
+          audio.play().then(() => {
+            setPlayerState(prev => ({ ...prev, isPlaying: true }));
+            hasAutoPlayedRef.current = true;
+          }).catch(error => {
             console.warn('Auto-play bloqueado:', error);
             setPlayerState(prev => ({ ...prev, isPlaying: false }));
           });
         }
+      }
+    };
+
+    const onCanPlayThrough = () => {
+      if (isMountedRef.current) {
+        setUiState(prev => ({ ...prev, isLoading: false }));
       }
     };
 
@@ -154,15 +175,18 @@ export function SpotifyPlayer({
 
     audio.addEventListener('loadstart', onLoadStart);
     audio.addEventListener('canplay', onCanPlay);
+    audio.addEventListener('canplaythrough', onCanPlayThrough);
     audio.addEventListener('error', onError);
     
     // Configurar áudio
+    hasAutoPlayedRef.current = false;
     audio.src = currentTrack.url;
     audio.volume = playerState.isMuted ? 0 : playerState.volume;
     audio.preload = 'metadata';
+    try { audio.load(); } catch {}
 
     return cleanup;
-  }, [currentTrack, autoPlay, playerState.isMuted, playerState.volume, playerState.isPlaying]);
+  }, [currentTrack, autoPlay, playerState.isMuted, playerState.volume, globalIsPlaying]);
 
   // Event listeners do áudio
   useEffect(() => {
@@ -178,13 +202,56 @@ export function SpotifyPlayer({
           const newTime = audio.currentTime;
           setPlayerState(prev => ({ ...prev, currentTime: newTime }));
           setContextTime(newTime);
+          // Se a duração ainda não foi definida, tente definir agora
+          if (isMountedRef.current && (!isFinite(playerState.duration) || playerState.duration === 0) && isFinite(audio.duration)) {
+            setPlayerState(prev => ({ ...prev, duration: audio.duration }));
+          }
         }
       }
     };
     
+    const computeDurationFromSeekable = () => {
+      try {
+        if (audio.seekable && audio.seekable.length > 0) {
+          return audio.seekable.end(audio.seekable.length - 1);
+        }
+      } catch {}
+      return undefined;
+    };
+
+    const coerceFiniteDuration = () => {
+      // Se duração é infinita ou 0, tente obter via seekable
+      const seekableDuration = computeDurationFromSeekable();
+      if (seekableDuration && isFinite(seekableDuration) && seekableDuration > 0) {
+        setPlayerState(prev => ({ ...prev, duration: seekableDuration }));
+        return true;
+      }
+      // Hack: tentar "saltar" para um tempo distante para forçar cálculo
+      try {
+        const target = 1e7; // ~115 dias, força browser a ajustar para o fim real
+        const onSeeked = () => {
+          const d = audio.duration;
+          if (isFinite(d) && d > 0) {
+            setPlayerState(prev => ({ ...prev, duration: d }));
+          }
+          // voltar para o início
+          try { audio.currentTime = 0; } catch {}
+          audio.removeEventListener('seeked', onSeeked);
+        };
+        audio.addEventListener('seeked', onSeeked);
+        audio.currentTime = target;
+        return false;
+      } catch {
+        return false;
+      }
+    };
+
     const updateDuration = () => {
       if (isMountedRef.current && isFinite(audio.duration)) {
         setPlayerState(prev => ({ ...prev, duration: audio.duration }));
+        setUiState(prev => ({ ...prev, isLoading: false }));
+      } else {
+        coerceFiniteDuration();
       }
     };
     
@@ -204,12 +271,14 @@ export function SpotifyPlayer({
     const handlePlay = () => {
       if (isMountedRef.current) {
         setPlayerState(prev => ({ ...prev, isPlaying: true }));
+        setGlobalIsPlaying(true);
       }
     };
     
     const handlePause = () => {
       if (isMountedRef.current) {
         setPlayerState(prev => ({ ...prev, isPlaying: false }));
+        setGlobalIsPlaying(false);
       }
     };
 
@@ -227,6 +296,8 @@ export function SpotifyPlayer({
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('durationchange', updateDuration);
+    audio.addEventListener('loadeddata', updateDuration);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
@@ -236,13 +307,62 @@ export function SpotifyPlayer({
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('durationchange', updateDuration);
+      audio.removeEventListener('loadeddata', updateDuration);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('waiting', handleWaiting);
       audio.removeEventListener('canplay', handleCanPlay);
     };
-  }, [playerState.repeatMode, playerState.currentIndex, tracks.length, setContextTime]);
+  }, [playerState.repeatMode, playerState.currentIndex, tracks.length, playerState.duration, setContextTime, setGlobalIsPlaying]);
+
+  // Sincronizar com o estado global de play/pause
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (globalIsPlaying) {
+      audio.play().then(() => {
+        setPlayerState(prev => ({ ...prev, isPlaying: true }));
+      }).catch(() => {
+        // Se falhar (autoplay bloqueado), mantemos estados como estão
+      });
+    } else {
+      audio.pause();
+      setPlayerState(prev => ({ ...prev, isPlaying: false }));
+    }
+  }, [globalIsPlaying]);
+
+  // Fallback: atualizar currentTime via polling enquanto tocando
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (playerState.isPlaying) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      intervalRef.current = window.setInterval(() => {
+        if (!isMountedRef.current) return;
+        const t = audio.currentTime;
+        if (isFinite(t)) {
+          setPlayerState(prev => ({ ...prev, currentTime: t }));
+          setContextTime(t);
+        }
+      }, 250) as unknown as number;
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [playerState.isPlaying, setContextTime]);
 
   // Controles otimizados
   const togglePlay = useCallback(async () => {
@@ -250,16 +370,20 @@ export function SpotifyPlayer({
     if (!audio || !currentTrack) return;
 
     try {
-      if (playerState.isPlaying) {
+      if (globalIsPlaying) {
         audio.pause();
+        contextPause();
       } else {
+        // Limpa estados de loading/erro ao tentar tocar manualmente
+        setUiState(prev => ({ ...prev, hasError: false, isLoading: false }));
         await audio.play();
+        contextPlay();
       }
     } catch (error) {
       console.error('Erro ao reproduzir áudio:', error);
       setUiState(prev => ({ ...prev, hasError: true }));
     }
-  }, [playerState.isPlaying, currentTrack]);
+  }, [globalIsPlaying, currentTrack, contextPause, contextPlay]);
 
   const handlePrevious = useCallback(() => {
     const newIndex = playerState.currentIndex > 0 ? playerState.currentIndex - 1 : tracks.length - 1;
@@ -329,11 +453,20 @@ export function SpotifyPlayer({
     if (currentTrack?.lyrics) {
       setUiState(prev => ({ 
         ...prev, 
-        showLyricsPanel: !prev.showLyricsPanel,
-        isLyricsFullscreen: prev.isMobile ? !prev.isLyricsFullscreen : prev.isLyricsFullscreen
+        showLyricsPanel: !prev.showLyricsPanel
       }));
     }
-  }, [currentTrack?.lyrics, uiState.isMobile]);
+  }, [currentTrack?.lyrics]);
+
+  const toggleLyricsFullscreen = useCallback(() => {
+    if (currentTrack?.lyrics) {
+      setUiState(prev => ({
+        ...prev,
+        isLyricsFullscreen: !prev.isLyricsFullscreen,
+        showLyricsPanel: true,
+      }));
+    }
+  }, [currentTrack?.lyrics]);
 
   const formatTime = useCallback((time: number) => {
     if (!isFinite(time) || isNaN(time)) return '0:00';
@@ -348,7 +481,7 @@ export function SpotifyPlayer({
 
   return (
     <>
-      <audio ref={audioRef} preload="metadata" />
+  <audio ref={audioRef} preload="metadata" crossOrigin="anonymous" />
       
       {/* Player Principal */}
       <div className="bg-gradient-to-r from-gray-900 to-black text-white shadow-2xl border-t border-gray-700">
@@ -415,15 +548,17 @@ export function SpotifyPlayer({
 
               <Button
                 onClick={togglePlay}
-                disabled={uiState.isLoading || uiState.hasError}
-                className="bg-white text-black hover:bg-gray-200 w-10 h-10 rounded-full flex items-center justify-center transition-all"
+                className="bg-white text-black hover:bg-gray-200 w-10 h-10 rounded-full flex items-center justify-center transition-all relative"
               >
-                {uiState.isLoading ? (
-                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                ) : playerState.isPlaying ? (
+                {globalIsPlaying ? (
                   <Pause className="h-5 w-5 ml-0.5" />
                 ) : (
                   <Play className="h-5 w-5 ml-0.5" />
+                )}
+                {uiState.isLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 rounded-full">
+                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                  </div>
                 )}
               </Button>
 
@@ -453,7 +588,9 @@ export function SpotifyPlayer({
             <div className="flex items-center space-x-2 text-xs text-gray-400">
               <span>{formatTime(playerState.currentTime)}</span>
               <span>/</span>
-              <span>{formatTime(playerState.duration)}</span>
+              <span>
+                {playerState.duration === 0 ? '—:—' : formatTime(playerState.duration)}
+              </span>
             </div>
           </div>
 
@@ -514,9 +651,13 @@ export function SpotifyPlayer({
         </div>
 
         {/* Error State */}
-        {uiState.hasError && (
+        {(uiState.hasError || (playerState.duration === 0 && playerState.isPlaying && !uiState.isLoading)) && (
           <div className="px-4 py-2 bg-red-600 text-white text-sm flex items-center justify-between">
-            <span>⚠️ Erro ao carregar áudio. Verifique a conexão.</span>
+            <span>
+              ⚠️ {uiState.hasError
+                ? 'Erro ao carregar áudio. Verifique a conexão.'
+                : 'Não foi possível determinar a duração do áudio. Pode ser um stream.'}
+            </span>
             <Button
               variant="ghost"
               size="sm"
@@ -529,28 +670,75 @@ export function SpotifyPlayer({
         )}
       </div>
 
-      {/* Painel de Letras Simples */}
+      {/* Painel de Letras (com modo tela cheia) */}
       {uiState.showLyricsPanel && currentTrack.lyrics && (
-        <div className="bg-gray-900 text-white border-t border-gray-700 max-h-64 overflow-hidden">
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Letras - {currentTrack.title}</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleLyrics}
-                className="text-gray-400 hover:text-white"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+        uiState.isLyricsFullscreen ? (
+          <div className="fixed inset-0 z-[60] bg-gray-950/95 text-white">
+            <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-gray-950/80 backdrop-blur">
+              <h3 className="text-lg font-semibold truncate">Letras - {currentTrack.title}</h3>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleLyricsFullscreen}
+                  className="text-gray-300 hover:text-white"
+                  title="Sair da tela cheia"
+                >
+                  <Minimize2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleLyrics}
+                  className="text-gray-300 hover:text-white"
+                  title="Fechar letras"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <div className="max-h-48 overflow-y-auto">
-              <pre className="text-sm leading-relaxed whitespace-pre-wrap text-gray-300">
-                {currentTrack.lyrics}
-              </pre>
+            <div className="p-4 md:p-6 overflow-y-auto max-h-[calc(100vh-56px)]">
+              <div
+                className="prose prose-invert prose-sm max-w-none text-gray-100 [&_p]:mb-3 [&_strong]:text-white"
+                dangerouslySetInnerHTML={{ __html: currentTrack.lyrics }}
+              />
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-gray-900 text-white border-t border-gray-700 max-h-64 overflow-hidden">
+            <div className="p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Letras - {currentTrack.title}</h3>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleLyricsFullscreen}
+                    className="text-gray-400 hover:text-white"
+                    title="Expandir para tela cheia"
+                  >
+                    <Maximize2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleLyrics}
+                    className="text-gray-400 hover:text-white"
+                    title="Fechar letras"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="max-h-48 overflow-y-auto pr-1">
+                <div
+                  className="prose prose-invert prose-sm max-w-none text-gray-300 [&_p]:mb-2 [&_strong]:text-white"
+                  dangerouslySetInnerHTML={{ __html: currentTrack.lyrics }}
+                />
+              </div>
+            </div>
+          </div>
+        )
       )}
 
       <style jsx>{`

@@ -211,10 +211,12 @@ export default function RehearsalDetailsReadOnly() {
           {hymns.filter(h => h.hymn.mp3Url).length > 0 && (
             <div className="pt-4 border-t">
               <Button
+                variant="outline"
+                size="sm"
                 onClick={playAllHymns}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                title="Tocar todos"
               >
-                <Play className="h-4 w-4 mr-2" />
+                <Play className="h-4 w-4 mr-2 text-green-600" />
                 Tocar Todos os Hinos
               </Button>
             </div>
@@ -263,32 +265,37 @@ export default function RehearsalDetailsReadOnly() {
                   <div className="flex items-center gap-2">
                     {rehearsalHymn.hymn.mp3Url && (
                       <>
-                        <button
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => playHymnFromList(rehearsalHymn.hymn.id)}
-                          className="p-2 text-green-600 hover:bg-green-50 rounded border"
                           title="Tocar no Player"
                         >
-                          <Play className="h-4 w-4" />
-                        </button>
+                          <Play className="h-4 w-4 mr-1 text-green-600" />
+                          Play
+                        </Button>
                         <a
                           href={rehearsalHymn.hymn.mp3Url}
                           target="_blank"
                           rel="noopener noreferrer"
                           download
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded border"
+                          className="inline-flex items-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 py-2 text-sm text-slate-700"
                           title="Baixar MP3"
                         >
-                          <Download className="h-4 w-4" />
+                          <Download className="h-4 w-4 mr-1 text-blue-600" />
+                          Download
                         </a>
                       </>
                     )}
-                    
+
                     <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => showHymnLyrics(rehearsalHymn)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded border bg-transparent"
                       title="Ver letra do hino"
                     >
-                      <Music className="h-4 w-4" />
+                      <Music className="h-4 w-4 mr-1 text-indigo-600" />
+                      Letras
                     </Button>
                   </div>
                 </div>

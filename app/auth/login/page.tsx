@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Music, LogIn, Headphones } from 'lucide-react';
+import { Music, LogIn } from 'lucide-react';
 import { getDefaultRedirect } from '@/lib/roles';
 import { toast } from 'sonner';
-import { musicalButton, musicalCard } from '@/lib/musical-theme';
+import { musicalButton } from '@/lib/musical-theme';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -49,68 +49,36 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background Musical Épico */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920&h=1080&fit=crop&crop=center')] bg-cover bg-center"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/95 via-indigo-900/95 to-pink-900/95"></div>
-        <div className="absolute inset-0 backdrop-blur-sm"></div>
-        
-        {/* Efeitos visuais animados */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-500"></div>
-          
-          {/* Ondas musicais */}
-          <div className="absolute top-10 right-10 animate-bounce delay-300">
-            <Headphones className="h-8 w-8 text-pink-400/60" />
-          </div>
-          <div className="absolute bottom-10 left-10 animate-bounce delay-700">
-            <Music className="h-10 w-10 text-purple-400/60" />
-          </div>
-        </div>
-      </div>
-      
+    <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
       {/* Conteúdo */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           {/* Header Musical */}
           <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur-lg opacity-75 animate-pulse"></div>
-                <div className="relative bg-white/20 backdrop-blur-md rounded-full p-4 border border-white/30">
-                  <Music className="h-12 w-12 text-pink-400" />
-                </div>
+            <div className="flex justify-center mb-4">
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-full p-3 shadow-md">
+                <Music className="h-10 w-10 text-white" />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-2xl mb-4">
-              🎵 Ensaios Igreja
-            </h1>
-            <p className="text-lg text-gray-200 font-medium drop-shadow-lg">
-              Portal Musical dos Ensaios
-            </p>
-            <p className="text-sm text-gray-300 mt-2">
-              Faça login para acessar o sistema de ensaios
-            </p>
+            <h1 className="text-4xl font-semibold text-slate-800 mb-1">Ensaios Igreja</h1>
+            <p className="text-slate-500">Portal Musical dos Ensaios</p>
           </div>
           
           {/* Card de Login */}
-          <Card className={`${musicalCard()} shadow-2xl border-white/30`}>
+          <Card className="shadow-lg">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl text-white flex items-center justify-center gap-2">
-                <LogIn className="h-6 w-6 text-pink-400" />
+              <CardTitle className="text-2xl text-slate-800 flex items-center justify-center gap-2">
+                <LogIn className="h-6 w-6 text-pink-600" />
                 Acesso ao Sistema
               </CardTitle>
-              <CardDescription className="text-gray-200">
-                Digite suas credenciais para entrar no portal musical
+              <CardDescription className="text-slate-500">
+                Digite suas credenciais para entrar no sistema
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white font-medium">Email</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -118,12 +86,12 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={isLoading}
-                    className="bg-white/20 border-white/30 text-white placeholder:text-gray-300 backdrop-blur-sm focus:border-pink-400 focus:ring-pink-400"
+                    className="focus:border-pink-500 focus:ring-pink-500"
                     placeholder="seu@email.com"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-white font-medium">Senha</Label>
+                  <Label htmlFor="password">Senha</Label>
                   <Input
                     id="password"
                     type="password"
@@ -131,13 +99,13 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={isLoading}
-                    className="bg-white/20 border-white/30 text-white placeholder:text-gray-300 backdrop-blur-sm focus:border-pink-400 focus:ring-pink-400"
+                    className="focus:border-pink-500 focus:ring-pink-500"
                     placeholder="••••••••"
                   />
                 </div>
                 <Button
                   type="submit"
-                  className={`w-full py-3 text-lg font-semibold ${musicalButton('primary')} transform hover:scale-105 transition-all duration-200`}
+                  className={`w-full py-3 text-lg font-semibold ${musicalButton('primary')} transform hover:scale-[1.01] transition-transform`}
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -155,20 +123,20 @@ export default function LoginPage() {
               </form>
               
               {/* Contas de Teste */}
-              <div className="mt-8 p-4 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
-                <p className="text-center font-semibold text-white mb-3">🎭 Contas de Demonstração</p>
-                <div className="space-y-2 text-sm">
+              <div className="mt-8 p-4 bg-slate-50 rounded-lg border">
+                <p className="text-center font-semibold text-slate-800 mb-3">Contas de Demonstração</p>
+                <div className="space-y-2 text-sm text-slate-600">
                   <div className="flex justify-between items-center">
-                    <span className="text-purple-300 font-medium">👑 Admin:</span>
-                    <span className="text-gray-200">admin@demo.com / Admin@123</span>
+                    <span className="font-medium">Admin:</span>
+                    <span>admin@demo.com / Admin@123</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-pink-300 font-medium">👤 Usuário:</span>
-                    <span className="text-gray-200">usuario@demo.com / Usuario@123</span>
+                    <span className="font-medium">Usuário:</span>
+                    <span>usuario@demo.com / Usuario@123</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-indigo-300 font-medium">🎸 Adolescente:</span>
-                    <span className="text-gray-200">adolescente1@demo.com / Adolescente@123</span>
+                    <span className="font-medium">Adolescente:</span>
+                    <span>adolescente1@demo.com / Adolescente@123</span>
                   </div>
                 </div>
               </div>
@@ -177,8 +145,8 @@ export default function LoginPage() {
           
           {/* Footer */}
           <div className="text-center">
-            <p className="text-gray-300 text-sm">
-              🎵 Sistema de Gestão Musical para Igrejas 🎵
+            <p className="text-slate-500 text-sm">
+              Sistema de Gestão Musical para Igrejas
             </p>
           </div>
         </div>

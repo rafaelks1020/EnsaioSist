@@ -174,53 +174,60 @@ export default function AcessoHinosPage() {
                   </div>
                   {hymn.mp3Url && (
                     <div className="flex items-center gap-2">
-                      <button
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           playHymnWithLyrics(hymn);
                         }}
-                        className="flex items-center gap-1 text-sm text-green-600 bg-green-50 hover:bg-green-100 px-2 py-1 rounded transition-colors"
                         title="Tocar no Player"
+                        className="text-slate-700"
                       >
-                        <Play className="h-4 w-4" />
+                        <Play className="h-4 w-4 mr-1 text-green-600" />
                         Play
-                      </button>
-                      
+                      </Button>
+
                       {hymn.lyrics && (
-                        <button
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             playHymnWithLyrics(hymn);
                             setShowLyricsPanel(true);
                           }}
-                          className="flex items-center gap-1 text-sm text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded transition-colors"
                           title="Ver letras sincronizadas"
+                          className="text-slate-700"
                         >
-                          <Mic2 className="h-4 w-4" />
+                          <Mic2 className="h-4 w-4 mr-1 text-indigo-600" />
                           Letras
-                        </button>
+                        </Button>
                       )}
-                      
-                      <a
-                        href={hymn.mp3Url}
-                        download
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex items-center gap-1 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
-                        title="Baixar MP3"
-                      >
-                        <Download className="h-4 w-4" />
-                        Download
-                      </a>
-                      <Link href={`/acesso/hinos/${hymn.id}`}>
-                        <Button
+
+                      {hymn.mp3Url && (
+                        <a
+                          href={hymn.mp3Url}
+                          download
                           onClick={(e) => e.stopPropagation()}
-                          className="text-sm px-3 py-1 border border-gray-300 bg-white hover:bg-gray-50"
+                          className="inline-flex items-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 py-2 text-sm text-slate-700"
+                          title="Baixar MP3"
+                        >
+                          <Download className="h-4 w-4 mr-1 text-blue-600" />
+                          Download
+                        </a>
+                      )}
+
+                      <Button asChild variant="outline" size="sm" className="text-slate-700">
+                        <Link
+                          href={`/acesso/hinos/${hymn.id}`}
+                          onClick={(e) => e.stopPropagation()}
                           title="Ver Detalhes"
                         >
-                          <Eye className="h-4 w-4 mr-1" />
+                          <Eye className="h-4 w-4 mr-1 text-slate-600" />
                           Detalhes
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                     </div>
                   )}
                 </div>

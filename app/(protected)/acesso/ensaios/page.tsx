@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Music, Users, ChevronRight } from 'lucide-react';
 import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 import { toast } from 'sonner';
@@ -163,13 +164,12 @@ export default function AcessoEnsaiosPage() {
                    `Em ${nextRehearsal.daysUntil} dias`}
                 </div>
               </div>
-              <a
-                href={`/acesso/ensaios/${nextRehearsal.slot.id}`}
-                className="inline-flex items-center px-4 py-2 text-sm border border-indigo-300 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded"
-              >
-                <Music className="h-4 w-4 mr-2" />
-                Ver Hinos
-              </a>
+              <Button asChild variant="outline" size="sm">
+                <a href={`/acesso/ensaios/${nextRehearsal.slot.id}`}>
+                  <Music className="h-4 w-4 mr-2 text-indigo-600" />
+                  Ver Hinos
+                </a>
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -220,13 +220,12 @@ export default function AcessoEnsaiosPage() {
                               )}
                             </div>
                           </div>
-                          <a
-                            href={`/acesso/ensaios/${slot.id}`}
-                            className="inline-flex items-center px-3 py-1 text-sm border border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded"
-                          >
-                            <Music className="h-4 w-4 mr-1" />
-                            Ver Hinos
-                          </a>
+                          <Button asChild variant="outline" size="sm">
+                            <a href={`/acesso/ensaios/${slot.id}`}>
+                              <Music className="h-4 w-4 mr-1 text-blue-600" />
+                              Ver Hinos
+                            </a>
+                          </Button>
                         </div>
                       ))}
                   </div>

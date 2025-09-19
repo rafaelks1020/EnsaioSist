@@ -8,6 +8,7 @@ import { HymnSelector } from '@/components/rehearsals/hymn-selector';
 import { ArrowLeft, Music, Trash2, Play, Download, Calendar, Clock } from 'lucide-react';
 import { Weekday } from '@/lib/roles';
 import { useHymnPlayer } from '@/hooks/use-audio-player';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 interface RehearsalSlot {
   id: string;

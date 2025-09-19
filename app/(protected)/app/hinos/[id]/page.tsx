@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Play, Edit, Download, Music, Calendar, User, FileText } from 'lucide-react';
 import { useHymnPlayer } from '@/hooks/use-audio-player';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 interface Hymn {
   id: string;
@@ -94,9 +95,11 @@ export default function HymnDetailsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-lg">Carregando...</div>
+      <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
+        <div className="relative z-10 container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-lg text-slate-600">Carregando...</div>
+          </div>
         </div>
       </div>
     );
@@ -104,14 +107,16 @@ export default function HymnDetailsPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <Music className="h-16 w-16 text-gray-400 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">{error}</h2>
-          <Button onClick={() => router.back()} className="mt-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
+      <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
+        <div className="relative z-10 container mx-auto px-4 py-8">
+          <div className="flex flex-col items-center justify-center min-h-[400px]">
+            <Music className="h-16 w-16 text-pink-500 mb-4" />
+            <h2 className="text-xl font-semibold text-slate-900 mb-2">{error}</h2>
+            <Button onClick={() => router.back()} className={`mt-4 ${musicalButton('secondary')}`}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -119,32 +124,35 @@ export default function HymnDetailsPage() {
 
   if (!hymn) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <Music className="h-16 w-16 text-gray-400 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Hino não encontrado</h2>
-          <Button onClick={() => router.back()} className="mt-4">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
+      <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
+        <div className="relative z-10 container mx-auto px-4 py-8">
+          <div className="flex flex-col items-center justify-center min-h-[400px]">
+            <Music className="h-16 w-16 text-pink-500 mb-4" />
+            <h2 className="text-xl font-semibold text-slate-900 mb-2">Hino não encontrado</h2>
+            <Button onClick={() => router.back()} className={`mt-4 ${musicalButton('secondary')}`}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
+      <div className="relative z-10 container mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Button
           onClick={() => router.back()}
-          className="p-2 bg-gray-600 hover:bg-gray-700"
+          className={musicalButton('secondary')}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{hymn.title}</h1>
-          <p className="text-gray-600">Detalhes do Hino</p>
+          <h1 className="text-3xl font-semibold text-slate-800">{hymn?.title}</h1>
+          <p className="text-slate-500">Detalhes do Hino</p>
         </div>
       </div>
 
@@ -152,11 +160,11 @@ export default function HymnDetailsPage() {
         {/* Main Content */}
         <div className="md:col-span-2 space-y-6">
           {/* Audio Player Card */}
-          {hymn.mp3Url && (
-            <Card>
+          {hymn?.mp3Url && (
+            <Card className={musicalCard()}>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Music className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 text-slate-800">
+                  <Music className="h-5 w-5 text-pink-500" />
                   Áudio
                 </CardTitle>
               </CardHeader>
@@ -164,14 +172,14 @@ export default function HymnDetailsPage() {
                 <div className="flex gap-2">
                   <Button
                     onClick={handlePlayHymn}
-                    className="bg-green-600 hover:bg-green-700"
+                    className={musicalButton('primary')}
                   >
                     <Play className="h-4 w-4 mr-2" />
                     Reproduzir
                   </Button>
                   <Button
                     onClick={handleDownload}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className={musicalButton('action')}
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Baixar MP3
@@ -182,33 +190,33 @@ export default function HymnDetailsPage() {
           )}
 
           {/* Lyrics Card */}
-          {hymn.lyrics && (
-            <Card>
+          {hymn?.lyrics && (
+            <Card className={musicalCard()}>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 text-slate-800">
+                  <FileText className="h-5 w-5 text-pink-500" />
                   Letra
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div 
-                  className="text-gray-700 leading-relaxed space-y-4 [&_p]:mb-4 [&_strong]:font-semibold [&_strong]:text-gray-900"
-                  dangerouslySetInnerHTML={{ __html: hymn.lyrics }}
+                  className="text-slate-700 leading-relaxed space-y-4 [&_p]:mb-4 [&_strong]:font-semibold [&_strong]:text-slate-900"
+                  dangerouslySetInnerHTML={{ __html: hymn?.lyrics || '' }}
                 />
               </CardContent>
             </Card>
           )}
 
           {/* No Content Message */}
-          {!hymn.lyrics && !hymn.mp3Url && (
-            <Card>
+          {!hymn?.lyrics && !hymn?.mp3Url && (
+            <Card className={musicalCard()}>
               <CardContent className="pt-6">
                 <div className="text-center py-8">
-                  <Music className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <Music className="h-12 w-12 text-pink-500 mx-auto mb-4" />
+                  <h3 className={`text-lg font-medium mb-2 text-slate-800`}>
                     Conteúdo não disponível
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-slate-500">
                     Este hino ainda não possui letra ou arquivo de áudio.
                   </p>
                 </div>
@@ -220,35 +228,35 @@ export default function HymnDetailsPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Details Card */}
-          <Card>
+          <Card className={musicalCard()}>
             <CardHeader>
-              <CardTitle>Informações</CardTitle>
+              <CardTitle className="text-slate-800">Informações</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-gray-400" />
+                <User className="h-4 w-4 text-pink-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Criado por</p>
-                  <p className="font-medium">{hymn.createdBy.name}</p>
+                  <p className="text-sm text-purple-300">Criado por</p>
+                  <p className={`font-medium ${musicalText('heading')}`}>{hymn?.createdBy?.name}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-400" />
+                <Calendar className="h-4 w-4 text-pink-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Data de criação</p>
-                  <p className="font-medium">
-                    {new Date(hymn.createdAt).toLocaleDateString('pt-BR')}
+                  <p className="text-sm text-purple-300">Data de criação</p>
+                  <p className={`font-medium ${musicalText('heading')}`}>
+                    {hymn ? new Date(hymn.createdAt).toLocaleDateString('pt-BR') : ''}
                   </p>
                 </div>
               </div>
 
-              {hymn.updatedAt !== hymn.createdAt && (
+              {hymn && hymn.updatedAt !== hymn.createdAt && (
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gray-400" />
+                  <Calendar className="h-4 w-4 text-pink-400" />
                   <div>
-                    <p className="text-sm text-gray-600">Última atualização</p>
-                    <p className="font-medium">
+                    <p className="text-sm text-purple-300">Última atualização</p>
+                    <p className={`font-medium ${musicalText('heading')}`}>
                       {new Date(hymn.updatedAt).toLocaleDateString('pt-BR')}
                     </p>
                   </div>
@@ -256,14 +264,14 @@ export default function HymnDetailsPage() {
               )}
 
               <div className="flex items-center gap-2">
-                <Music className="h-4 w-4 text-gray-400" />
+                <Music className="h-4 w-4 text-pink-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Status do áudio</p>
-                  <p className="font-medium">
-                    {hymn.mp3Url ? (
-                      <span className="text-green-600">MP3 Disponível</span>
+                  <p className="text-sm text-purple-300">Status do áudio</p>
+                  <p className={`font-medium ${musicalText('heading')}`}>
+                    {hymn?.mp3Url ? (
+                      <span className="text-green-400">MP3 Disponível</span>
                     ) : (
-                      <span className="text-gray-500">Sem áudio</span>
+                      <span className="text-purple-300">Sem áudio</span>
                     )}
                   </p>
                 </div>
@@ -272,14 +280,14 @@ export default function HymnDetailsPage() {
           </Card>
 
           {/* Actions Card */}
-          <Card>
+          <Card className={musicalCard()}>
             <CardHeader>
-              <CardTitle>Ações</CardTitle>
+              <CardTitle className={musicalText('gradient')}>Ações</CardTitle>
             </CardHeader>
             <CardContent>
               <Button
-                onClick={() => router.push(`/app/hinos/${hymn.id}/editar`)}
-                className="w-full"
+                onClick={() => router.push(`/app/hinos/${hymn?.id}/editar`)}
+                className={`w-full ${musicalButton('primary')}`}
               >
                 <Edit className="h-4 w-4 mr-2" />
                 Editar Hino
@@ -288,6 +296,7 @@ export default function HymnDetailsPage() {
           </Card>
         </div>
       </div>
+    </div>
     </div>
   );
 }

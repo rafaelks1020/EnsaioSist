@@ -19,7 +19,6 @@ import {
 import { Plus, Edit, Trash2, Calendar, Clock, Music } from 'lucide-react';
 import { toast } from 'sonner';
 import { Weekday } from '@/lib/roles';
-import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 interface RehearsalSlot {
   id: string;
@@ -324,24 +323,28 @@ export default function EnsaiosPage() {
                           
                           {/* Mobile Actions */}
                           <div className="flex sm:hidden gap-2 w-full">
-                            <a
-                              href={`/app/ensaios/${slot.id}`}
-                              className="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm border border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded touch-manipulation"
-                            >
-                              <Music className="h-4 w-4 mr-1" />
-                              Hinos
-                            </a>
+                            <Button asChild variant="outline" size="sm" className="flex-1 touch-manipulation">
+                              <a href={`/app/ensaios/${slot.id}`}>
+                                <Music className="h-4 w-4 mr-1 text-blue-600" />
+                                Hinos
+                              </a>
+                            </Button>
                             <Button
-                              className="flex-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-3 py-2 text-sm touch-manipulation"
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 touch-manipulation"
                               onClick={() => startEdit(slot)}
+                              title="Editar ensaio"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-4 w-4 mr-1 text-slate-700" />
+                              Editar
                             </Button>
                             
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button className="flex-1 bg-red-600 text-white hover:bg-red-700 px-3 py-2 text-sm touch-manipulation">
-                                  <Trash2 className="h-4 w-4" />
+                                <Button variant="destructive" size="sm" className="flex-1 touch-manipulation">
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Excluir
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
@@ -366,24 +369,28 @@ export default function EnsaiosPage() {
 
                           {/* Desktop Actions */}
                           <div className="hidden sm:flex gap-2 flex-shrink-0">
-                            <a
-                              href={`/app/ensaios/${slot.id}`}
-                              className="inline-flex items-center px-3 py-1 text-sm border border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded touch-manipulation"
-                            >
-                              <Music className="h-4 w-4 mr-1" />
-                              Hinos
-                            </a>
+                            <Button asChild variant="outline" size="sm" className="touch-manipulation">
+                              <a href={`/app/ensaios/${slot.id}`}>
+                                <Music className="h-4 w-4 mr-1 text-blue-600" />
+                                Hinos
+                              </a>
+                            </Button>
                             <Button
-                              className="border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-3 py-1 text-sm touch-manipulation"
+                              variant="outline"
+                              size="sm"
+                              className="touch-manipulation"
                               onClick={() => startEdit(slot)}
+                              title="Editar ensaio"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-4 w-4 mr-1 text-slate-700" />
+                              Editar
                             </Button>
                             
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button className="bg-red-600 text-white hover:bg-red-700 px-3 py-1 text-sm touch-manipulation">
-                                  <Trash2 className="h-4 w-4" />
+                                <Button variant="destructive" size="sm" className="touch-manipulation">
+                                  <Trash2 className="h-4 w-4 mr-1" />
+                                  Excluir
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>

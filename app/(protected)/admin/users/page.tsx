@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -160,11 +161,15 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
+      <div className="relative z-10 space-y-6 p-4 sm:p-6 pb-24">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Usuários</h1>
-          <p className="text-gray-600">Gerencie usuários do sistema</p>
+          <h1 className={`text-3xl sm:text-4xl font-semibold mb-2 flex items-center gap-3`}>
+            <Users className="h-8 sm:h-10 w-8 sm:w-10 text-pink-500" />
+            <span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent">Usuários</span>
+          </h1>
+          <p className="text-slate-500">Gerencie usuários do sistema</p>
         </div>
         <Button
           onClick={() => {
@@ -172,6 +177,7 @@ export default function AdminUsersPage() {
             setEditingUser(null);
             setFormData({ name: '', email: '', role: Role.ADOLESCENTE as Role, password: '' });
           }}
+          className={musicalButton('primary')}
         >
           <Plus className="h-4 w-4 mr-2" />
           Novo Usuário
@@ -180,12 +186,12 @@ export default function AdminUsersPage() {
 
       {/* Form */}
       {showCreateForm && (
-        <Card>
+        <Card className={musicalCard()}>
           <CardHeader>
-            <CardTitle>
+            <CardTitle className={musicalText('gradient')}>
               {editingUser ? 'Editar Usuário' : 'Novo Usuário'}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-purple-200">
               {editingUser ? 'Edite as informações do usuário' : 'Crie um novo usuário do sistema'}
             </CardDescription>
           </CardHeader>
@@ -241,7 +247,7 @@ export default function AdminUsersPage() {
               )}
               
               <div className="flex gap-2">
-                <Button type="submit">
+                <Button type="submit" className={musicalButton('primary')}>
                   {editingUser ? 'Atualizar' : 'Criar'}
                 </Button>
                 <Button
@@ -250,7 +256,7 @@ export default function AdminUsersPage() {
                     setShowCreateForm(false);
                     setEditingUser(null);
                   }}
-                  className="border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                  className={musicalButton('secondary')}
                 >
                   Cancelar
                 </Button>
@@ -263,54 +269,54 @@ export default function AdminUsersPage() {
       {/* Users List */}
       {loading ? (
         <div className="flex items-center justify-center py-8">
-          <div className="text-gray-500">Carregando...</div>
+          <div className="text-slate-500">Carregando...</div>
         </div>
       ) : (
         <div className="grid gap-4">
           {users.length === 0 ? (
-            <Card>
+            <Card className={musicalCard()}>
               <CardContent className="pt-6">
-                <div className="text-center text-gray-500">
-                  <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <div className="text-center text-slate-500">
+                  <Users className="h-12 w-12 mx-auto mb-4 text-pink-500" />
                   <p>Nenhum usuário encontrado</p>
                 </div>
               </CardContent>
             </Card>
           ) : (
             users.map((user) => (
-              <Card key={user.id}>
+              <Card key={user.id} className={musicalCard()}>
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900">
+                      <h3 className={`text-lg font-semibold text-slate-800`}>
                         {user.name}
                       </h3>
-                      <p className="text-sm text-gray-600">{user.email}</p>
+                      <p className="text-slate-500">{user.email}</p>
                       <div className="flex items-center gap-2 mt-2">
                         <span className={`px-2 py-1 text-xs rounded-full ${
                           user.role === Role.ADMIN
-                            ? 'bg-red-100 text-red-800'
+                            ? 'bg-pink-100 text-pink-700'
                             : user.role === Role.USUARIO
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-purple-100 text-purple-700'
                         }`}>
                           {getRoleLabel(user.role)}
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-slate-400">
                           Criado em {new Date(user.createdAt).toLocaleDateString('pt-BR')}
                         </span>
                       </div>
                     </div>
                     <div className="flex gap-2 ml-4">
                       <Button
-                        className="border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-3 py-1 text-sm"
+                        className={musicalButton('secondary')}
                         onClick={() => startEdit(user)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       
                       <Button
-                        className="border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-3 py-1 text-sm"
+                        className={musicalButton('action')}
                         onClick={() => handleResetPassword(user.id, user.name)}
                       >
                         <Key className="h-4 w-4" />
@@ -318,7 +324,7 @@ export default function AdminUsersPage() {
                       
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button className="bg-red-600 text-white hover:bg-red-700 px-3 py-1 text-sm">
+                          <Button className={musicalButton('danger')}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </AlertDialogTrigger>
@@ -348,6 +354,7 @@ export default function AdminUsersPage() {
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { RichTextEditor } from '@/components/forms/rich-text-editor';
 import { Upload, Save, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
 
 export default function NovoHinoPage() {
   const [title, setTitle] = useState('');
@@ -106,25 +107,26 @@ export default function NovoHinoPage() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="min-h-screen relative bg-gradient-to-b from-white to-slate-50">
+      <div className="relative z-10 space-y-4 sm:space-y-6 p-4 sm:p-6 pb-24">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <Link href="/app/hinos">
-          <Button className="w-full sm:w-auto border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3">
+          <Button className={`w-full sm:w-auto ${musicalButton('secondary')}`}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
         </Link>
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Novo Hino</h1>
-          <p className="text-gray-600 text-sm sm:text-base">Adicione um novo hino à biblioteca</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800">Novo Hino</h1>
+          <p className="text-slate-500 text-sm sm:text-base">Adicione um novo hino à biblioteca</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-        <Card>
+        <Card className={musicalCard()}>
           <CardHeader>
-            <CardTitle>Informações Básicas</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-slate-800">Informações Básicas</CardTitle>
+            <CardDescription className="text-slate-500">
               Digite o título e a letra do hino
             </CardDescription>
           </CardHeader>
@@ -151,10 +153,10 @@ export default function NovoHinoPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={musicalCard()}>
           <CardHeader>
-            <CardTitle>Arquivo de Áudio</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-slate-800">Arquivo de Áudio</CardTitle>
+            <CardDescription className="text-slate-500">
               Faça upload do arquivo MP3 (opcional, máximo 20MB)
             </CardDescription>
           </CardHeader>
@@ -174,7 +176,7 @@ export default function NovoHinoPage() {
                 type="button"
                 onClick={handleUpload}
                 disabled={isUploading}
-                className="w-full sm:w-auto"
+                className={`w-full sm:w-auto ${musicalButton('action')}`}
               >
                 <Upload className="h-4 w-4 mr-2" />
                 {isUploading ? 'Enviando...' : 'Fazer Upload'}
@@ -194,17 +196,18 @@ export default function NovoHinoPage() {
         </Card>
 
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button type="submit" disabled={isSaving} className="w-full sm:w-auto">
+          <Button type="submit" disabled={isSaving} className={`w-full sm:w-auto ${musicalButton('primary')}`}>
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? 'Salvando...' : 'Salvar Hino'}
           </Button>
           <Link href="/app/hinos" className="w-full sm:w-auto">
-            <Button type="button" className="w-full border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+            <Button type="button" className={`w-full ${musicalButton('secondary')}`}>
               Cancelar
             </Button>
           </Link>
         </div>
       </form>
+      </div>
     </div>
   );
 }

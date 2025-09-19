@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Play, Music, List, Users, Lock } from 'lucide-react';
 import { usePlaylistPlayer } from '@/hooks/use-audio-player';
 import { musicalButton, musicalCard, musicalText } from '@/lib/musical-theme';
@@ -144,19 +145,21 @@ export default function AcessoPlaylistsPage() {
                     </span>
                   </div>
                   <div className="flex gap-2">
-                    <a
-                      href={`/acesso/playlists/${playlist.id}`}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded border text-sm"
-                    >
-                      Ver Detalhes
-                    </a>
-                    <button
+                    <Button asChild variant="outline" size="sm">
+                      <a href={`/acesso/playlists/${playlist.id}`}>
+                        Ver Detalhes
+                      </a>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => playPlaylist(playlist)}
-                      className="p-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
                       disabled={playlist.items.filter(item => item.hymn.mp3Url).length === 0}
+                      title="Tocar playlist"
                     >
-                      <Play className="h-4 w-4" />
-                    </button>
+                      <Play className="h-4 w-4 mr-1 text-green-600" />
+                      Play
+                    </Button>
                   </div>
                 </div>
               </CardContent>
